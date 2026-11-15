@@ -37,7 +37,7 @@ export function CategoryPickerGrid({
         ]}
         className={`flex-row items-center rounded-2xl px-3.5 mr-2.5 ${
           isSelected
-            ? 'bg-[#FF5A1F]/10 border-[#FF5A1F]'
+            ? 'bg-[#FFF0EB] border-[#FF5A1F]'
             : 'bg-white border-[#E4E0D8]'
         }`}
       >

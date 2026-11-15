@@ -61,7 +61,7 @@ export function BudgetProgressBar({
       </View>
 
       {/* Progress track */}
-      <View className="h-2.5 w-full bg-[#E4E0D8]/60 rounded-full overflow-hidden">
+      <View className="h-2.5 w-full bg-[#E4E0D8] rounded-full overflow-hidden">
         <View
           style={[
             styles.progressFill,

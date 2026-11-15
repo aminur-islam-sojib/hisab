@@ -55,7 +55,7 @@ export function HistoryFilterBar({
           <Pressable
             hitSlop={8}
             onPress={() => onChangeSearch('')}
-            className="p-1 rounded-full bg-[#E4E0D8]/60"
+            className="p-1 rounded-full bg-[#E4E0D8]"
           >
             <Icon name="X" size={13} color="#18181B" />
           </Pressable>

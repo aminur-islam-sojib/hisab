@@ -75,7 +75,7 @@ export function ExpenseItem({
         styles.container,
         pressed && styles.pressed,
       ]}
-      className={`flex-row items-center justify-between bg-white rounded-2xl p-3.5 mb-2.5 border border-[#E4E0D8]/50 shadow-sm ${className}`}
+      className={`flex-row items-center justify-between bg-white rounded-2xl p-3.5 mb-2.5 border border-[#E4E0D8] shadow-sm ${className}`}
     >
       {/* Left: Category Icon Squircle */}
       <View

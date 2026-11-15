@@ -1,26 +1,21 @@
 import "../global.css";
+import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, View } from "react-native";
+import * as SplashScreen from "expo-splash-screen";
 import { useAppStore } from "@/store/useAppStore";
+
+// Prevent the native splash screen from auto-hiding before hydration completes
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
   const hasHydrated = useAppStore((state) => state.hasHydrated);
 
-  if (!hasHydrated) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#F7F4EF",
-        }}
-      >
-        <ActivityIndicator size="large" color="#FF5A1F" />
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (hasHydrated) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [hasHydrated]);
 
   return (
     <>

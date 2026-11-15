@@ -105,7 +105,7 @@ export default function HistoryScreen() {
           )}
           ListEmptyComponent={
             <View className="items-center justify-center py-16 px-4">
-              <View className="w-16 h-16 rounded-full bg-[#E4E0D8]/40 items-center justify-center mb-3">
+              <View className="w-16 h-16 rounded-full bg-[#ECE8DF] items-center justify-center mb-3">
                 <Icon name="Search" size={26} color="#71717A" />
               </View>
               <Text className="text-base font-semibold text-[#18181B] mb-1">

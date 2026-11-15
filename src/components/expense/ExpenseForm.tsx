@@ -121,7 +121,7 @@ export function ExpenseForm({
         className="flex-1"
       >
         {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#E4E0D8]/60 bg-white">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#E4E0D8] bg-white">
           <Pressable
             hitSlop={10}
             onPress={() => router.back()}
@@ -138,7 +138,7 @@ export function ExpenseForm({
               hitSlop={10}
               onPress={handleDelete}
               style={styles.headerBtn}
-              className="items-center justify-center rounded-full bg-[#DC2626]/10 border border-[#DC2626]/20"
+              className="items-center justify-center rounded-full bg-[#FEECEC] border border-[#FACDCD]"
             >
               <Icon name="Trash2" size={18} color="#DC2626" />
             </Pressable>
@@ -175,7 +175,7 @@ export function ExpenseForm({
             </View>
 
             {hasExpression && (
-              <Text className="text-xs font-semibold text-[#FF5A1F] mt-1 bg-[#FF5A1F]/10 px-2.5 py-0.5 rounded-full">
+              <Text className="text-xs font-semibold text-[#FF5A1F] mt-1 bg-[#FFF0EB] px-2.5 py-0.5 rounded-full">
                 = {formatCurrency(toMinorUnits(evaluatedAmount), settings)}
               </Text>
             )}

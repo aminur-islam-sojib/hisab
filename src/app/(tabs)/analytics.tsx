@@ -45,7 +45,7 @@ export default function AnalyticsScreen() {
           </Text>
 
           {/* Period Toggle */}
-          <View className="flex-row bg-[#E4E0D8]/40 p-1 rounded-2xl border border-[#E4E0D8]/60">
+          <View className="flex-row bg-[#ECE8DF] p-1 rounded-2xl border border-[#E4E0D8]">
             <Pressable
               onPress={() => setPeriod('week')}
               style={[styles.toggleBtn, period === 'week' && styles.activeToggle]}

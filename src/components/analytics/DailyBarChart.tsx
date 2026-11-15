@@ -106,7 +106,7 @@ export function DailyBarChart({
         {/* Budget Limit Guide Line */}
         <View
           style={[styles.limitLine, { bottom: `${limitLinePercent}%` }]}
-          className="absolute left-0 right-0 border-b border-dashed border-[#DC2626]/50 flex-row justify-end"
+          className="absolute left-0 right-0 border-b border-dashed border-[#DC2626] flex-row justify-end"
         >
           <View className="bg-[#FAF8F5] px-1 -top-2.5">
             <Text className="text-[9px] font-bold text-[#DC2626]">

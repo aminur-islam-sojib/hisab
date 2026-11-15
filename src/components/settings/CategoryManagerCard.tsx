@@ -96,7 +96,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
         </Text>
         <Pressable
           onPress={() => setModalVisible(true)}
-          className="flex-row items-center bg-[#FF5A1F]/10 px-2.5 py-1 rounded-full"
+          className="flex-row items-center bg-[#FFF0EB] px-2.5 py-1 rounded-full"
         >
           <Icon name="Plus" size={13} color="#FF5A1F" />
           <Text className="text-xs font-bold text-[#FF5A1F] ml-1">Add New</Text>
@@ -110,8 +110,8 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
             key={cat.id}
             className={`flex-row items-center justify-between p-2.5 rounded-2xl border ${
               cat.isArchived
-                ? 'bg-[#F4F1EA]/60 border-[#E4E0D8]/40 opacity-60'
-                : 'bg-white border-[#E4E0D8]/60 shadow-sm'
+                ? 'bg-[#F4F1EA] border-[#E4E0D8] opacity-60'
+                : 'bg-white border-[#E4E0D8] shadow-sm'
             }`}
           >
             <View className="flex-row items-center flex-1 mr-2">
@@ -137,7 +137,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
               className={`px-2.5 py-1 rounded-full border ${
                 cat.isArchived
                   ? 'bg-white border-[#E4E0D8]'
-                  : 'bg-[#F4F1EA] border-[#E4E0D8]/80'
+                  : 'bg-[#F4F1EA] border-[#E4E0D8]'
               }`}
             >
               <Text className="text-xs font-semibold text-[#71717A]">
@@ -155,7 +155,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 justify-end bg-black/40">
+        <View style={styles.modalOverlay} className="flex-1 justify-end">
           <View className="bg-white rounded-t-3xl p-5 border-t border-[#E4E0D8]">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="text-lg font-bold text-[#18181B]">Add Category</Text>
@@ -220,7 +220,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
                       ]}
                       className={`rounded-2xl items-center justify-center border ${
                         isSelected
-                          ? 'bg-[#FF5A1F]/10 border-[#FF5A1F]'
+                          ? 'bg-[#FFF0EB] border-[#FF5A1F]'
                           : 'bg-[#F4F1EA] border-[#E4E0D8]'
                       }`}
                     >
@@ -250,6 +250,9 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
 }
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   colorSwatch: {
     width: 38,
     height: 38,

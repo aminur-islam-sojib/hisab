@@ -49,7 +49,7 @@ export function DateSwitcher({
         onPress={handlePrevDay}
         hitSlop={8}
         style={styles.circleBtn}
-        className="w-11 h-11 rounded-full bg-white items-center justify-center border border-[#E4E0D8]/60 shadow-sm"
+        className="w-11 h-11 rounded-full bg-white items-center justify-center border border-[#E4E0D8] shadow-sm"
       >
         <Icon name="ChevronLeft" size={20} color="#18181B" />
       </Pressable>
@@ -61,7 +61,7 @@ export function DateSwitcher({
           {!isToday && (
             <Pressable
               onPress={handleJumpToToday}
-              className="ml-2 bg-[#FF5A1F]/10 px-2 py-0.5 rounded-full"
+              className="ml-2 bg-[#FFF0EB] px-2 py-0.5 rounded-full"
             >
               <Text className="text-xs font-semibold text-[#FF5A1F]">Today</Text>
             </Pressable>
@@ -77,7 +77,7 @@ export function DateSwitcher({
         hitSlop={8}
         style={[styles.circleBtn, isToday && styles.disabledBtn]}
         className={`w-11 h-11 rounded-full items-center justify-center border ${
-          isToday ? 'bg-[#F4F1EA] border-[#E4E0D8]/40' : 'bg-white border-[#E4E0D8]/60 shadow-sm'
+          isToday ? 'bg-[#F4F1EA] border-[#E4E0D8]' : 'bg-white border-[#E4E0D8] shadow-sm'
         }`}
       >
         <Icon

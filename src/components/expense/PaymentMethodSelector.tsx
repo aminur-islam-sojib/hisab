@@ -23,7 +23,8 @@ export function PaymentMethodSelector({
 }: PaymentMethodSelectorProps) {
   return (
     <View
-      className={`flex-row bg-[#E4E0D8]/40 p-1 rounded-2xl border border-[#E4E0D8]/60 ${className}`}
+      style={styles.container}
+      className={`flex-row p-1 rounded-2xl ${className}`}
     >
       {METHODS.map((method) => {
         const isSelected = selected === method.id;
@@ -33,11 +34,9 @@ export function PaymentMethodSelector({
             onPress={() => onSelect(method.id)}
             style={[
               styles.segment,
-              isSelected && styles.selectedSegment,
+              isSelected ? styles.selectedSegment : styles.unselectedSegment,
             ]}
-            className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${
-              isSelected ? 'bg-white shadow-sm' : 'bg-transparent'
-            }`}
+            className="flex-1 flex-row items-center justify-center py-2.5 rounded-xl"
           >
             <Icon
               name={method.icon}
@@ -46,9 +45,8 @@ export function PaymentMethodSelector({
               strokeWidth={2.2}
             />
             <Text
-              className={`text-xs ml-1.5 font-bold ${
-                isSelected ? 'text-[#18181B]' : 'text-[#71717A]'
-              }`}
+              style={isSelected ? styles.selectedText : styles.unselectedText}
+              className="text-xs ml-1.5 font-bold"
             >
               {method.label}
             </Text>
@@ -60,14 +58,29 @@ export function PaymentMethodSelector({
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'rgba(228, 224, 216, 0.4)',
+    borderColor: 'rgba(228, 224, 216, 0.6)',
+    borderWidth: 1,
+  },
   segment: {
     minHeight: 44,
   },
   selectedSegment: {
+    backgroundColor: '#FFFFFF',
     shadowColor: '#18181B',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 1,
+  },
+  unselectedSegment: {
+    backgroundColor: 'transparent',
+  },
+  selectedText: {
+    color: '#18181B',
+  },
+  unselectedText: {
+    color: '#71717A',
   },
 });

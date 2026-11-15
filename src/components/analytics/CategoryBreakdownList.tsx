@@ -21,7 +21,7 @@ export function CategoryBreakdownList({
   if (breakdown.length === 0) {
     return (
       <Card className={`p-6 items-center justify-center ${className}`}>
-        <View className="w-12 h-12 rounded-full bg-[#E4E0D8]/40 items-center justify-center mb-2">
+        <View className="w-12 h-12 rounded-full bg-[#E4E0D8] items-center justify-center mb-2">
           <Icon name="PieChart" size={22} color="#71717A" />
         </View>
         <Text className="text-sm font-semibold text-[#18181B] mb-0.5">
@@ -78,7 +78,7 @@ export function CategoryBreakdownList({
             </View>
 
             {/* Horizontal Color Bar */}
-            <View className="h-2 w-full bg-[#E4E0D8]/50 rounded-full overflow-hidden">
+            <View className="h-2 w-full bg-[#E4E0D8] rounded-full overflow-hidden">
               <View
                 style={{
                   width: `${Math.min(100, Math.max(3, item.percentage))}%`,

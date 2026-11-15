@@ -146,7 +146,7 @@ export function BackupManagerCard({ className = '' }: BackupManagerCardProps) {
         />
 
         {/* Danger: Reset All Data */}
-        <View className="pt-2 mt-1 border-t border-[#E4E0D8]/60">
+        <View className="pt-2 mt-1 border-t border-[#E4E0D8]">
           <Button
             title="Reset All Local Data"
             variant="danger"
@@ -164,9 +164,9 @@ export function BackupManagerCard({ className = '' }: BackupManagerCardProps) {
         animationType="fade"
         onRequestClose={() => setPendingPayload(null)}
       >
-        <View className="flex-1 justify-center items-center bg-black/50 p-5">
+        <View style={styles.modalOverlay} className="flex-1 justify-center items-center p-5">
           <View className="bg-white rounded-3xl p-6 w-full max-w-sm border border-[#E4E0D8]">
-            <View className="w-12 h-12 rounded-full bg-[#16A34A]/10 items-center justify-center self-center mb-3">
+            <View className="w-12 h-12 rounded-full bg-[#E8F8EE] items-center justify-center self-center mb-3">
               <Icon name="Check" size={24} color="#16A34A" />
             </View>
 
@@ -182,7 +182,7 @@ export function BackupManagerCard({ className = '' }: BackupManagerCardProps) {
               <Pressable
                 onPress={() => executeRestore('replace')}
                 style={styles.modalOption}
-                className="bg-[#DC2626]/10 border border-[#DC2626]/20 rounded-2xl p-3.5"
+                className="bg-[#FEECEC] border border-[#FACDCD] rounded-2xl p-3.5"
               >
                 <Text className="text-sm font-bold text-[#DC2626] mb-0.5">
                   Replace All Data
@@ -223,6 +223,9 @@ export function BackupManagerCard({ className = '' }: BackupManagerCardProps) {
 }
 
 const styles = StyleSheet.create({
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   modalOption: {
     minHeight: 52,
   },

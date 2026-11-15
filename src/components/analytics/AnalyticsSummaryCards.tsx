@@ -34,7 +34,7 @@ export function AnalyticsSummaryCards({
           <Text className="text-xs font-semibold text-[#71717A] uppercase tracking-wider">
             Total Spent ({periodLabel})
           </Text>
-          <View className="flex-row items-center bg-[#FF5A1F]/10 px-2 py-0.5 rounded-full">
+          <View className="flex-row items-center bg-[#FFF0EB] px-2 py-0.5 rounded-full">
             <Icon name="Receipt" size={12} color="#FF5A1F" />
             <Text className="text-xs font-semibold text-[#FF5A1F] ml-1">
               {summary.transactionCount} {summary.transactionCount === 1 ? 'txn' : 'txns'}
@@ -46,7 +46,7 @@ export function AnalyticsSummaryCards({
           {formatCurrency(summary.totalSpendMinor, { currencySymbol, showDecimals })}
         </Text>
 
-        <View className="flex-row items-center justify-between pt-2 border-t border-[#E4E0D8]/60">
+        <View className="flex-row items-center justify-between pt-2 border-t border-[#E4E0D8]">
           <Text className="text-xs font-medium text-[#71717A]">
             Budget Cap: {formatCurrency(summary.budgetLimitMinor, { currencySymbol, showDecimals })}
           </Text>

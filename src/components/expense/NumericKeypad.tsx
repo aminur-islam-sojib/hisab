@@ -201,7 +201,7 @@ function KeypadButton({
 }: KeypadButtonProps) {
   const variantStyles = {
     digit: {
-      container: 'bg-white border-[#E4E0D8]/60 shadow-sm',
+      container: 'bg-white border-[#E4E0D8] shadow-sm',
       text: 'text-[#18181B] font-bold text-xl',
     },
     operator: {

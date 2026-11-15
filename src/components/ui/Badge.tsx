@@ -32,23 +32,23 @@ export function Badge({
       text: 'text-[#18181B]',
     },
     neutral: {
-      container: 'bg-[#E4E0D8]/40 border border-transparent',
+      container: 'bg-[#ECE8DF] border border-transparent',
       text: 'text-[#71717A]',
     },
     accent: {
-      container: 'bg-[#FF5A1F]/10 border border-[#FF5A1F]/20',
+      container: 'bg-[#FFF0EB] border border-[#FFD5C5]',
       text: 'text-[#FF5A1F]',
     },
     income: {
-      container: 'bg-[#16A34A]/10 border border-[#16A34A]/20',
+      container: 'bg-[#E8F8EE] border border-[#BBF0CD]',
       text: 'text-[#16A34A]',
     },
     warning: {
-      container: 'bg-[#EAB308]/15 border border-[#EAB308]/30',
+      container: 'bg-[#FEF9E6] border border-[#FCECB5]',
       text: 'text-[#B45309]',
     },
     danger: {
-      container: 'bg-[#DC2626]/10 border border-[#DC2626]/20',
+      container: 'bg-[#FEECEC] border border-[#FACDCD]',
       text: 'text-[#DC2626]',
     },
     outline: {

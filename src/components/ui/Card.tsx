@@ -17,7 +17,7 @@ export function Card({ children, onPress, className = '', style, ...rest }: Card
           state.pressed && styles.pressed,
           style,
         ]}
-        className={`bg-white rounded-3xl p-[18px] border border-[#E4E0D8]/60 ${className}`}
+        className={`bg-white rounded-3xl p-[18px] border border-[#E4E0D8] ${className}`}
         {...rest}
       >
         {children}
@@ -28,7 +28,7 @@ export function Card({ children, onPress, className = '', style, ...rest }: Card
   return (
     <View
       style={[styles.card, style]}
-      className={`bg-white rounded-3xl p-[18px] border border-[#E4E0D8]/60 ${className}`}
+      className={`bg-white rounded-3xl p-[18px] border border-[#E4E0D8] ${className}`}
       {...rest}
     >
       {children}
