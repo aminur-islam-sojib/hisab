@@ -50,7 +50,7 @@ export default function AnalyticsScreen() {
               onPress={() => setPeriod('week')}
               style={[styles.toggleBtn, period === 'week' && styles.activeToggle]}
               className={`px-3 py-1.5 rounded-xl ${
-                period === 'week' ? 'bg-white shadow-xs' : 'bg-transparent'
+                period === 'week' ? 'bg-white shadow-sm' : 'bg-transparent'
               }`}
             >
               <Text
@@ -66,7 +66,7 @@ export default function AnalyticsScreen() {
               onPress={() => setPeriod('month')}
               style={[styles.toggleBtn, period === 'month' && styles.activeToggle]}
               className={`px-3 py-1.5 rounded-xl ${
-                period === 'month' ? 'bg-white shadow-xs' : 'bg-transparent'
+                period === 'month' ? 'bg-white shadow-sm' : 'bg-transparent'
               }`}
             >
               <Text

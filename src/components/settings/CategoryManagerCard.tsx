@@ -111,7 +111,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
             className={`flex-row items-center justify-between p-2.5 rounded-2xl border ${
               cat.isArchived
                 ? 'bg-[#F4F1EA]/60 border-[#E4E0D8]/40 opacity-60'
-                : 'bg-white border-[#E4E0D8]/60 shadow-xs'
+                : 'bg-white border-[#E4E0D8]/60 shadow-sm'
             }`}
           >
             <View className="flex-row items-center flex-1 mr-2">

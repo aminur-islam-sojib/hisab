@@ -125,7 +125,7 @@ export function NumericKeypad({
             key={chip}
             onPress={() => handleQuickChip(chip)}
             style={styles.chip}
-            className="flex-1 mx-1 bg-white border border-[#E4E0D8] rounded-xl py-2 items-center justify-center shadow-xs"
+            className="flex-1 mx-1 bg-white border border-[#E4E0D8] rounded-xl py-2 items-center justify-center shadow-sm"
           >
             <Text className="text-xs font-bold text-[#FF5A1F]">+{chip}</Text>
           </Pressable>
@@ -201,7 +201,7 @@ function KeypadButton({
 }: KeypadButtonProps) {
   const variantStyles = {
     digit: {
-      container: 'bg-white border-[#E4E0D8]/60 shadow-xs',
+      container: 'bg-white border-[#E4E0D8]/60 shadow-sm',
       text: 'text-[#18181B] font-bold text-xl',
     },
     operator: {

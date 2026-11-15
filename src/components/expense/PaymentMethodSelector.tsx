@@ -36,7 +36,7 @@ export function PaymentMethodSelector({
               isSelected && styles.selectedSegment,
             ]}
             className={`flex-1 flex-row items-center justify-center py-2.5 rounded-xl ${
-              isSelected ? 'bg-white shadow-xs' : 'bg-transparent'
+              isSelected ? 'bg-white shadow-sm' : 'bg-transparent'
             }`}
           >
             <Icon

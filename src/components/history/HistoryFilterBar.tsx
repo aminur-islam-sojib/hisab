@@ -39,7 +39,7 @@ export function HistoryFilterBar({
       {/* Search Input Box */}
       <View
         style={styles.searchBox}
-        className="flex-row items-center bg-white rounded-2xl px-3.5 border border-[#E4E0D8] mb-2.5 shadow-2xs"
+        className="flex-row items-center bg-white rounded-2xl px-3.5 border border-[#E4E0D8] mb-2.5 shadow-sm"
       >
         <Icon name="Search" size={18} color="#71717A" />
         <TextInput
