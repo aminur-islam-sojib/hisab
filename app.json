@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "hisab",
-    "slug": "hisab",
+    "name": "InFlow",
+    "slug": "inflow",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "hisab",
+    "scheme": "inflow",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -18,7 +18,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.hisab"
+      "package": "com.anonymous.inflow"
     },
     "web": {
       "output": "server",

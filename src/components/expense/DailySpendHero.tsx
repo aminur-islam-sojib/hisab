@@ -29,7 +29,7 @@ export const DailySpendHero = React.memo(function DailySpendHero({
         {dateLabel}
       </Text>
 
-      {/* 3-Column Overview Card matching CoinPie: Income | Expense | Balance */}
+      {/* 3-Column Overview Card matching InFlow: Income | Expense | Balance */}
       <View className="bg-white rounded-3xl p-4 border border-[#E4E0D8] shadow-sm">
         <View className="flex-row items-center justify-between">
           {/* Income */}

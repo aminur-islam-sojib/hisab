@@ -15,9 +15,9 @@ import { Icon } from '@/components/ui/Icon';
 import { CategoryBreakdownItem } from '@/store/selectors';
 import { getLocalTodayDateString, parseLocalDateString } from '@/utils/date';
 
-export type CoinPieTab = 'today' | 'expenses' | 'income' | 'loans';
+export type InFlowTab = 'today' | 'expenses' | 'income' | 'loans';
 
-export interface CoinPieCardProps {
+export interface InFlowCardProps {
   monthName: string;
   selectedDate: string;
   todayExpenseTotalMinor: number;
@@ -142,7 +142,7 @@ const AnimatedCategoryRow = React.memo(function AnimatedCategoryRow({
   );
 });
 
-export const CoinPieCard = React.memo(function CoinPieCard({
+export const InFlowCard = React.memo(function InFlowCard({
   monthName,
   selectedDate,
   todayExpenseTotalMinor,
@@ -157,8 +157,8 @@ export const CoinPieCard = React.memo(function CoinPieCard({
   showDecimals = false,
   onSelectCategory,
   className = '',
-}: CoinPieCardProps) {
-  const [activeTab, setActiveTab] = useState<CoinPieTab>('today');
+}: InFlowCardProps) {
+  const [activeTab, setActiveTab] = useState<InFlowTab>('today');
   const [todaySubTab, setTodaySubTab] = useState<'expense' | 'income'>('expense');
 
   // Shared values for chart motion

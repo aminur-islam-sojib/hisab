@@ -55,7 +55,7 @@ export default function SettingsScreen() {
           {/* App Info Footer */}
           <View className="items-center py-4">
             <Text className="text-xs font-semibold text-[#71717A]">
-              Daily Cost Manager (Hisab) • v1.0.0
+              InFlow • v1.0.0
             </Text>
             <Text className="text-[11px] text-[#A1A1AA] mt-0.5">
               Zero Database • Offline-First • Local Storage

@@ -94,7 +94,7 @@ async function shareOrDownloadFile(
 
 /**
  * Exports full store state into a JSON backup file and prompts sharing.
- * File Name: daily-cost-backup-YYYY-MM-DD.json
+ * File Name: inflow-backup-YYYY-MM-DD.json
  */
 export async function exportFullBackupJson(): Promise<ExportResult> {
   try {
@@ -104,7 +104,7 @@ export async function exportFullBackupJson(): Promise<ExportResult> {
 
     const jsonString = JSON.stringify(payload, null, 2);
     const dateStr = getLocalTodayDateString();
-    const fileName = `daily-cost-backup-${dateStr}.json`;
+    const fileName = `inflow-backup-${dateStr}.json`;
 
     await shareOrDownloadFile(fileName, jsonString, 'application/json');
     return { success: true, fileName };
@@ -191,7 +191,7 @@ export async function importAndValidateBackupJson(): Promise<BackupImportResult>
 
 /**
  * Exports all expenses into RFC-4180 escaped CSV for spreadsheets.
- * File Name: daily-cost-export-YYYY-MM-DD.csv
+ * File Name: inflow-export-YYYY-MM-DD.csv
  * Columns: id,spent_at_date,amount,currency,category_name,payment_method,note,created_at_iso
  */
 export async function exportExpensesCsv(): Promise<ExportResult> {
@@ -223,7 +223,7 @@ export async function exportExpensesCsv(): Promise<ExportResult> {
 
     const csvContent = [header, ...rows].join('\n');
     const dateStr = getLocalTodayDateString();
-    const fileName = `daily-cost-export-${dateStr}.csv`;
+    const fileName = `inflow-export-${dateStr}.csv`;
 
     await shareOrDownloadFile(fileName, csvContent, 'text/csv');
     return { success: true, fileName };

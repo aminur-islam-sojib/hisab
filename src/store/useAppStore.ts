@@ -146,7 +146,7 @@ export const useAppStore = create<AppStoreState>()(
       exportBackupPayload: () => {
         const state = get();
         return {
-          app: 'daily-cost-manager',
+          app: 'inflow',
           schemaVersion: 1,
           exportedAt: new Date().toISOString(),
           data: {

@@ -228,7 +228,7 @@ export function AppDrawer({
             <View className="flex-row items-center justify-between mb-5 mt-1">
               <View>
                 <Text className="text-3xl font-black text-[#18181B] tracking-tight">
-                  Hi<Text className="text-[#FF5A1F]">shab</Text>
+                  In<Text className="text-[#FF5A1F]">Flow</Text>
                 </Text>
                 <Text className="text-xs font-semibold text-[#71717A] mt-0.5">
                   Money tracker
@@ -370,7 +370,7 @@ export function AppDrawer({
                 onPress={() => {
                   handleDismiss();
                   setTimeout(() => {
-                    Alert.alert('Theme Settings', 'CoinPie is currently styled in warm high-contrast mode.');
+                    Alert.alert('Theme Settings', 'InFlow is currently styled in warm high-contrast mode.');
                   }, 180);
                 }}
                 style={[styles.menuItem, activeRoute === 'theme' && styles.activeMenuItem]}

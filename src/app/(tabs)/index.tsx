@@ -13,7 +13,7 @@ import {
 import { getLocalTodayDateString, parseLocalDateString } from '@/utils/date';
 import { DateSwitcher } from '@/components/expense/DateSwitcher';
 import { DailySpendHero } from '@/components/expense/DailySpendHero';
-import { CoinPieCard } from '@/components/expense/CoinPieCard';
+import { InFlowCard } from '@/components/expense/InFlowCard';
 import { ExpenseModal } from '@/components/expense/ExpenseModal';
 import { TodayBottomBar } from '@/components/expense/TodayBottomBar';
 import { useDrawerStore } from '@/store/useDrawerStore';
@@ -84,10 +84,10 @@ export default function TodayScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#F7F4EF]">
       <View className="flex-1 px-4">
-        {/* Top Header: CoinPie Logo + Hamburger Menu Button (≡) */}
+        {/* Top Header: InFlow Logo + Hamburger Menu Button (≡) */}
         <View className="flex-row items-center justify-between py-1 mb-1">
           <Text className="text-2xl font-black text-[#18181B] tracking-tight">
-            Coin<Text className="text-[#FF5A1F]">Pie</Text>
+            In<Text className="text-[#FF5A1F]">Flow</Text>
           </Text>
           <Pressable
             hitSlop={8}
@@ -117,8 +117,8 @@ export default function TodayScreen() {
             className="mt-1"
           />
 
-          {/* CoinPie Donut Chart Card with Tabs (Today, Expenses, Income, Loans) */}
-          <CoinPieCard
+          {/* InFlow Donut Chart Card with Tabs (Today, Expenses, Income, Loans) */}
+          <InFlowCard
             monthName={monthName}
             selectedDate={selectedDate}
             todayExpenseTotalMinor={todayExpenseTotal}

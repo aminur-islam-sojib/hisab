@@ -56,7 +56,7 @@ export type BudgetSettings = z.infer<typeof BudgetSettingsSchema>;
  * Used to validate exported and imported .json backup files.
  */
 export const BackupFileSchema = z.object({
-  app: z.literal('daily-cost-manager'),
+  app: z.union([z.literal('inflow'), z.literal('daily-cost-manager')]),
   schemaVersion: z.number().int().default(1),
   exportedAt: z.string(), // ISO 8601 timestamp
   data: z.object({

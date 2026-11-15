@@ -54,7 +54,7 @@ export function DateSwitcher({
         <Icon name="ChevronLeft" size={20} color="#18181B" strokeWidth={2.4} />
       </Pressable>
 
-      {/* Center: Current Date Display (Matching CoinPie format: "Today · Sun, 15 Nov") */}
+      {/* Center: Current Date Display (Matching InFlow format: "Today · Sun, 15 Nov") */}
       <Pressable onPress={handleJumpToToday} className="items-center py-1 px-2">
         <Text className="text-base font-extrabold text-[#18181B] tracking-tight">
           {dateDisplayTitle}
