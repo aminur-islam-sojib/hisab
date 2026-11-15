@@ -12,18 +12,18 @@
 
 ## Milestone 2: Core UI Components & Today's Dashboard
 
-- [ ] Build atomic UI components in `src/components/ui/` (`Card.tsx`, `Button.tsx`, `Badge.tsx`, `Icon.tsx` wrapping `lucide-react-native`).
-- [ ] Build `src/components/expense/BudgetProgressBar.tsx` (shows spent vs. daily limit, turns amber at 80% and red at 100%).
-- [ ] Build `src/components/expense/ExpenseItem.tsx` (displays category icon/color, note, payment badge, amount, and swipe/tap actions).
-- [ ] Implement Today's Dashboard (`src/app/(tabs)/index.tsx`) with date switcher, hero spend card, payment method filter chips, and Floating Action Button (`+`).
-- [ ] Verify store hydration gating in `src/app/_layout.tsx` so UI renders cleanly without flash of empty state.
+- [x] Build atomic UI components in `src/components/ui/` (`Card.tsx`, `Button.tsx`, `Badge.tsx`, `Icon.tsx` wrapping `lucide-react-native`).
+- [x] Build `src/components/expense/BudgetProgressBar.tsx` (shows spent vs. daily limit, turns amber at 80% and red at 100%).
+- [x] Build `src/components/expense/ExpenseItem.tsx` (displays category icon/color, note, payment badge, amount, and swipe/tap actions).
+- [x] Implement Today's Dashboard (`src/app/(tabs)/index.tsx`) with date switcher, hero spend card, payment method filter chips, and Floating Action Button (`+`).
+- [x] Verify store hydration gating in `src/app/_layout.tsx` so UI renders cleanly without flash of empty state.
 
 ## Milestone 3: Quick-Add & Edit Expense Modal
 
-- [ ] Build `src/components/expense/NumericKeypad.tsx` with quick-add chips (`+50`, `+100`, `+500`) and basic inline `+ / -` evaluation.
-- [ ] Build `src/components/expense/CategoryPickerGrid.tsx` (2-row selectable pill grid).
-- [ ] Implement `src/app/expense/new.tsx` and `src/app/expense/[id].tsx` modals with `KeyboardAvoidingView`, payment method segmented control, note input, and date selector.
-- [ ] Connect save/update/delete actions to `useAppStore` and verify instant dashboard updates.
+- [x] Build `src/components/expense/NumericKeypad.tsx` with quick-add chips (`+50`, `+100`, `+500`) and basic inline `+ / -` evaluation.
+- [x] Build `src/components/expense/CategoryPickerGrid.tsx` (2-row selectable pill grid).
+- [x] Implement `src/app/expense/new.tsx` and `src/app/expense/[id].tsx` modals with `KeyboardAvoidingView`, payment method segmented control, note input, and date selector.
+- [x] Connect save/update/delete actions to `useAppStore` and verify instant dashboard updates.
 
 ## Milestone 4: Analytics & Transaction History
 
