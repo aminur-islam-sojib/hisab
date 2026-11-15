@@ -75,7 +75,7 @@ export default function TodayScreen() {
         {/* Top Header: CoinPie Logo + Hamburger Menu Button (≡) */}
         <View className="flex-row items-center justify-between py-1 mb-1">
           <Text className="text-2xl font-black text-[#18181B] tracking-tight">
-            Hi<Text className="text-[#FF5A1F]">Shab</Text>
+            His<Text className="text-[#FF5A1F]">hab</Text>
           </Text>
           <Pressable
             hitSlop={8}

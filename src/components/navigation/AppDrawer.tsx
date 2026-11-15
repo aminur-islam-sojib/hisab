@@ -209,7 +209,7 @@ export function AppDrawer({
             <View className="flex-row items-center justify-between mb-5 mt-1">
               <View>
                 <Text className="text-3xl font-black text-[#18181B] tracking-tight">
-                  Coin<Text className="text-[#FF5A1F]">Pie</Text>
+                  Hi<Text className="text-[#FF5A1F]">shab</Text>
                 </Text>
                 <Text className="text-xs font-semibold text-[#71717A] mt-0.5">
                   Money tracker
