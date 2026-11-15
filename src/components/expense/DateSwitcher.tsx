@@ -39,8 +39,8 @@ export function DateSwitcher({
     onDateChange(todayStr);
   };
 
-  const displayDate = formatDisplayDate(currentDate, { showRelative: true });
   const formattedSubDate = format(parseLocalDateString(currentDate), 'EEE, d MMM');
+  const dateDisplayTitle = isToday ? `Today · ${formattedSubDate}` : formattedSubDate;
 
   return (
     <View className={`flex-row items-center justify-between py-2 ${className}`}>
@@ -49,41 +49,35 @@ export function DateSwitcher({
         onPress={handlePrevDay}
         hitSlop={8}
         style={styles.circleBtn}
-        className="w-11 h-11 rounded-full bg-white items-center justify-center border border-[#E4E0D8] shadow-sm"
+        className="w-11 h-11 rounded-full bg-white items-center justify-center border border-[#E4E0D8] shadow-sm active:bg-[#ECE8DF]"
       >
-        <Icon name="ChevronLeft" size={20} color="#18181B" />
+        <Icon name="ChevronLeft" size={20} color="#18181B" strokeWidth={2.4} />
       </Pressable>
 
-      {/* Center: Current Date Display */}
-      <View className="items-center">
-        <View className="flex-row items-center">
-          <Text className="text-lg font-bold text-[#18181B]">{displayDate}</Text>
-          {!isToday && (
-            <Pressable
-              onPress={handleJumpToToday}
-              className="ml-2 bg-[#FFF0EB] px-2 py-0.5 rounded-full"
-            >
-              <Text className="text-xs font-semibold text-[#FF5A1F]">Today</Text>
-            </Pressable>
-          )}
-        </View>
-        <Text className="text-xs text-[#71717A] font-medium">{formattedSubDate}</Text>
-      </View>
+      {/* Center: Current Date Display (Matching CoinPie format: "Today · Sun, 15 Nov") */}
+      <Pressable onPress={handleJumpToToday} className="items-center py-1 px-2">
+        <Text className="text-base font-extrabold text-[#18181B] tracking-tight">
+          {dateDisplayTitle}
+        </Text>
+        {!isToday && (
+          <Text className="text-[11px] font-bold text-[#FF5A1F] mt-0.5">
+            Tap to return to Today
+          </Text>
+        )}
+      </Pressable>
 
       {/* Right: Next Day Button */}
       <Pressable
         onPress={handleNextDay}
-        disabled={isToday}
         hitSlop={8}
-        style={[styles.circleBtn, isToday && styles.disabledBtn]}
-        className={`w-11 h-11 rounded-full items-center justify-center border ${
-          isToday ? 'bg-[#F4F1EA] border-[#E4E0D8]' : 'bg-white border-[#E4E0D8] shadow-sm'
-        }`}
+        style={styles.circleBtn}
+        className="w-11 h-11 rounded-full bg-white items-center justify-center border border-[#E4E0D8] shadow-sm active:bg-[#ECE8DF]"
       >
         <Icon
           name="ChevronRight"
           size={20}
-          color={isToday ? '#A1A1AA' : '#18181B'}
+          color="#18181B"
+          strokeWidth={2.4}
         />
       </Pressable>
     </View>

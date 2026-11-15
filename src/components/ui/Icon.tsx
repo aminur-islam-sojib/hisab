@@ -52,6 +52,16 @@ import {
   Phone,
   Landmark,
   Banknote,
+  Menu,
+  Shapes,
+  Moon,
+  Layers,
+  Handshake,
+  ArrowLeftRight,
+  Type,
+  Cloud,
+  CircleDollarSign,
+  BadgeDollarSign,
 } from 'lucide-react-native';
 
 export const ICON_MAP: Record<string, LucideIcon> = {
@@ -105,6 +115,16 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Phone,
   Landmark,
   Banknote,
+  Menu,
+  Shapes,
+  Moon,
+  Layers,
+  Handshake,
+  ArrowLeftRight,
+  Type,
+  Cloud,
+  CircleDollarSign,
+  BadgeDollarSign,
 };
 
 import { ColorValue } from 'react-native';

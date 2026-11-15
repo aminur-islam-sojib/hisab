@@ -13,6 +13,7 @@ import {
   Category,
   Expense,
   PaymentMethod,
+  TransactionType,
 } from '@/models/schema';
 import {
   formatDateToLocalString,
@@ -207,6 +208,30 @@ export function selectMonthlyTotal(
 }
 
 /**
+ * Computes monthly total spend in minor units (expenses only).
+ */
+export function selectMonthlyExpenseTotal(
+  expenses: Expense[],
+  monthDate: Date = new Date()
+): number {
+  return selectExpensesForMonth(expenses, monthDate)
+    .filter((e) => (e.type ?? 'expense') === 'expense')
+    .reduce((sum, e) => sum + e.amountMinor, 0);
+}
+
+/**
+ * Computes monthly total income in minor units.
+ */
+export function selectMonthlyIncomeTotal(
+  expenses: Expense[],
+  monthDate: Date = new Date()
+): number {
+  return selectExpensesForMonth(expenses, monthDate)
+    .filter((e) => e.type === 'income')
+    .reduce((sum, e) => sum + e.amountMinor, 0);
+}
+
+/**
  * Computes category breakdown for a set of expenses, ranked from highest to lowest spend.
  */
 export function selectCategoryBreakdown(
@@ -218,19 +243,24 @@ export function selectCategoryBreakdown(
     startDate?: string;
     endDate?: string;
     date?: string;
+    type?: TransactionType;
   }
 ): CategoryBreakdownItem[] {
   let targetExpenses = expenses;
   const refDate = options?.referenceDate ?? new Date();
 
+  if (options?.type) {
+    targetExpenses = targetExpenses.filter((e) => (e.type ?? 'expense') === options.type);
+  }
+
   if (options?.date) {
-    targetExpenses = selectExpensesByDate(expenses, options.date);
+    targetExpenses = selectExpensesByDate(targetExpenses, options.date);
   } else if (options?.period === 'week') {
-    targetExpenses = selectExpensesForWeek(expenses, refDate);
+    targetExpenses = selectExpensesForWeek(targetExpenses, refDate);
   } else if (options?.period === 'month') {
-    targetExpenses = selectExpensesForMonth(expenses, refDate);
+    targetExpenses = selectExpensesForMonth(targetExpenses, refDate);
   } else if (options?.startDate || options?.endDate) {
-    targetExpenses = expenses.filter((e) =>
+    targetExpenses = targetExpenses.filter((e) =>
       isDateInRange(e.spentAtDate, options.startDate, options.endDate)
     );
   }

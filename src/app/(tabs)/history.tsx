@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, SectionList, StyleSheet, Platform } from 'react-native';
+import { View, Text, SectionList, StyleSheet, Platform, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import { useAppStore } from '@/store/useAppStore';
 import { selectCategoryMap, selectGroupedExpensesByDate } from '@/store/selectors';
 import { Expense, PaymentMethod } from '@/models/schema';
@@ -8,6 +9,7 @@ import { formatCurrency } from '@/utils/currency';
 import { ExpenseItem } from '@/components/expense/ExpenseItem';
 import { ExpenseModal } from '@/components/expense/ExpenseModal';
 import { HistoryFilterBar } from '@/components/history/HistoryFilterBar';
+import { useDrawerStore } from '@/store/useDrawerStore';
 import { Icon } from '@/components/ui/Icon';
 
 export default function HistoryScreen() {
@@ -15,6 +17,7 @@ export default function HistoryScreen() {
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const openDrawer = useDrawerStore((s) => s.openDrawer);
 
   const expenses = useAppStore((state) => state.expenses);
   const categories = useAppStore((state) => state.categories);
@@ -41,12 +44,29 @@ export default function HistoryScreen() {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#F7F4EF]">
       <View className="flex-1 px-4">
-        {/* Header */}
-        <View className="flex-row items-center justify-between py-3">
-          <Text className="text-2xl font-extrabold text-[#18181B] tracking-tight">History</Text>
-          <Text className="text-xs font-semibold text-[#71717A]">
-            {totalResultsCount} {totalResultsCount === 1 ? 'transaction' : 'transactions'}
-          </Text>
+        {/* Header with Back Button, Title & Menu Button */}
+        <View className="flex-row items-center justify-between py-1 mb-2">
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={() => router.back()}
+              hitSlop={8}
+              className="w-10 h-10 rounded-full bg-white border border-[#E4E0D8] items-center justify-center mr-3 shadow-sm active:bg-[#ECE8DF]"
+            >
+              <Icon name="ChevronLeft" size={20} color="#18181B" strokeWidth={2.4} />
+            </Pressable>
+            <Text className="text-2xl font-black text-[#18181B] tracking-tight">History</Text>
+            <Text className="text-xs font-semibold text-[#71717A] ml-2">
+              ({totalResultsCount})
+            </Text>
+          </View>
+
+          <Pressable
+            hitSlop={8}
+            onPress={() => openDrawer('history')}
+            className="w-11 h-11 rounded-full bg-white border border-[#E4E0D8] items-center justify-center shadow-sm active:bg-[#ECE8DF]"
+          >
+            <Icon name="Menu" size={21} color="#18181B" strokeWidth={2.4} />
+          </Pressable>
         </View>
 
         {/* Search & Filters */}
