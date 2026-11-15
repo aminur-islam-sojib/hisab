@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import {
   Modal,
   View,
@@ -11,6 +11,13 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
 import {
   format,
   subDays,
@@ -81,6 +88,13 @@ export function ExpenseModal({
   const deleteExpense = useAppStore((state) => state.deleteExpense);
   const addCategory = useAppStore((state) => state.addCategory);
 
+  const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
+
+  // Reanimated UI-thread shared values
+  const [isModalMounted, setIsModalMounted] = useState(visible);
+  const translateY = useSharedValue(600);
+  const backdropOpacity = useSharedValue(0);
+
   const transactionType: TransactionType = expenseToEdit?.type ?? type;
 
   const activeCategories = useMemo(() => {
@@ -107,7 +121,47 @@ export function ExpenseModal({
   const [newCatColor, setNewCatColor] = useState(PRESET_COLORS[0]);
   const [newCatIcon, setNewCatIcon] = useState(PRESET_ICONS[0]);
 
-  // Sync form state whenever modal opens or expenseToEdit changes
+  // Handle open / close animations on UI thread
+  useEffect(() => {
+    if (visible) {
+      setIsModalMounted(true);
+      translateY.value = withTiming(0, {
+        duration: 250,
+        easing: Easing.out(Easing.cubic),
+      });
+      backdropOpacity.value = withTiming(1, {
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+      });
+
+      // Smoothly orchestrate keyboard opening after slide begins (avoids frame drops)
+      if (!expenseToEdit) {
+        const timer = setTimeout(() => {
+          inputRef.current?.focus();
+        }, 90);
+        return () => clearTimeout(timer);
+      }
+    } else {
+      translateY.value = withTiming(600, {
+        duration: 200,
+        easing: Easing.in(Easing.cubic),
+      });
+      backdropOpacity.value = withTiming(
+        0,
+        {
+          duration: 180,
+          easing: Easing.in(Easing.quad),
+        },
+        (finished) => {
+          if (finished) {
+            runOnJS(setIsModalMounted)(false);
+          }
+        }
+      );
+    }
+  }, [visible, expenseToEdit]);
+
+  // Synchronize form state on open
   useEffect(() => {
     if (visible) {
       if (expenseToEdit) {
@@ -128,7 +182,7 @@ export function ExpenseModal({
     }
   }, [visible, expenseToEdit, transactionType, activeCategories]);
 
-  // Ensure categoryId is valid for current category list
+  // Ensure categoryId is valid
   useEffect(() => {
     if (visible && !activeCategories.some((c) => c.id === categoryId)) {
       if (activeCategories[0]) {
@@ -136,6 +190,46 @@ export function ExpenseModal({
       }
     }
   }, [visible, activeCategories, categoryId]);
+
+  const animatedBackdropStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+
+  const animatedSheetStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  const handleDismiss = useCallback(() => {
+    translateY.value = withTiming(600, {
+      duration: 190,
+      easing: Easing.in(Easing.cubic),
+    });
+    backdropOpacity.value = withTiming(
+      0,
+      {
+        duration: 170,
+        easing: Easing.in(Easing.quad),
+      },
+      (finished) => {
+        if (finished) {
+          runOnJS(setIsModalMounted)(false);
+          runOnJS(onClose)();
+        }
+      }
+    );
+  }, [onClose]);
+
+  const handleSelectCategory = useCallback((id: string) => {
+    setCategoryId(id);
+  }, []);
+
+  const handleSelectPayment = useCallback((method: PaymentMethod) => {
+    setPaymentMethod(method);
+  }, []);
+
+  const handleOpenAddCategory = useCallback(() => {
+    setShowAddCategoryModal(true);
+  }, []);
 
   const parsedDate = parseLocalDateString(spentAtDate);
   const isToday = checkIsToday(parsedDate);
@@ -198,7 +292,7 @@ export function ExpenseModal({
       });
     }
 
-    onClose();
+    handleDismiss();
   };
 
   const handleDelete = () => {
@@ -214,7 +308,7 @@ export function ExpenseModal({
           style: 'destructive',
           onPress: () => {
             deleteExpense(expenseToEdit.id);
-            onClose();
+            handleDismiss();
           },
         },
       ]
@@ -243,26 +337,35 @@ export function ExpenseModal({
     setShowAddCategoryModal(false);
   };
 
+  if (!isModalMounted) {
+    return null;
+  }
+
   return (
     <Modal
-      visible={visible}
-      animationType="slide"
+      visible={isModalMounted}
+      animationType="none"
       transparent
       statusBarTranslucent
-      onRequestClose={onClose}
+      onRequestClose={handleDismiss}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardContainer}
       >
-        {/* Backdrop overlay */}
-        <Pressable
-          onPress={onClose}
-          style={styles.backdrop}
-        />
+        {/* Animated backdrop with fade */}
+        <Animated.View style={[styles.backdrop, animatedBackdropStyle]}>
+          <Pressable
+            onPress={handleDismiss}
+            style={styles.backdropPressArea}
+          />
+        </Animated.View>
 
-        {/* Bottom Sheet Modal Container */}
-        <View style={styles.sheetContainer} className="bg-[#FAF8F5] rounded-t-[32px] pt-2 px-5 border-t border-[#E4E0D8]">
+        {/* Animated Bottom Sheet with UI-thread 60fps spring/cubic slide */}
+        <Animated.View
+          style={[styles.sheetContainer, animatedSheetStyle]}
+          className="bg-[#FAF8F5] rounded-t-[32px] pt-2 px-5 border-t border-[#E4E0D8]"
+        >
           {/* Top Pill Handle */}
           <View style={styles.grabHandle} className="bg-[#D1CDC7] rounded-full self-center mb-2 mt-1" />
 
@@ -308,7 +411,7 @@ export function ExpenseModal({
                 )}
                 <Pressable
                   hitSlop={10}
-                  onPress={onClose}
+                  onPress={handleDismiss}
                   style={styles.headerBtn}
                   className="items-center justify-center rounded-full bg-white border border-[#E4E0D8]"
                 >
@@ -369,7 +472,7 @@ export function ExpenseModal({
               </View>
             )}
 
-            {/* Amount Card: Orange border for expense, Charcoal border for income */}
+            {/* Amount Card */}
             <View
               style={[
                 styles.amountCard,
@@ -382,13 +485,13 @@ export function ExpenseModal({
                   {settings.currencySymbol}
                 </Text>
                 <TextInput
+                  ref={inputRef}
                   value={amountStr}
                   onChangeText={handleAmountChange}
                   placeholder="0"
                   placeholderTextColor="#D1CDC7"
                   keyboardType="decimal-pad"
                   returnKeyType="done"
-                  autoFocus={!expenseToEdit}
                   selectTextOnFocus
                   style={styles.amountInput}
                 />
@@ -415,23 +518,23 @@ export function ExpenseModal({
               Category
             </Text>
 
-            {/* 4-Column Category Grid */}
+            {/* 4-Column Category Grid (Memoized: 0 re-renders on typing) */}
             <CategoryPickerGrid
               categories={activeCategories}
               selectedCategoryId={categoryId}
-              onSelectCategory={setCategoryId}
-              onAddCategoryPress={() => setShowAddCategoryModal(true)}
+              onSelectCategory={handleSelectCategory}
+              onAddCategoryPress={handleOpenAddCategory}
               className="mb-2"
             />
 
-            {/* Payment Method Selector */}
+            {/* Payment Method Selector (Memoized: 0 re-renders on typing) */}
             <View className="my-3">
               <Text className="text-xs font-semibold text-[#71717A] uppercase tracking-wider mb-2 ml-0.5">
                 Payment Method
               </Text>
               <PaymentMethodSelector
                 selected={paymentMethod}
-                onSelect={setPaymentMethod}
+                onSelect={handleSelectPayment}
               />
             </View>
 
@@ -464,7 +567,7 @@ export function ExpenseModal({
               </Text>
             </Pressable>
           </ScrollView>
-        </View>
+        </Animated.View>
       </KeyboardAvoidingView>
 
       {/* Quick Add Category Modal */}
@@ -558,6 +661,7 @@ export function ExpenseModal({
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
+    justifyContent: 'flex-end',
   },
   backdrop: {
     position: 'absolute',
@@ -567,8 +671,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',
   },
+  backdropPressArea: {
+    flex: 1,
+  },
   sheetContainer: {
-    marginTop: 'auto',
     maxHeight: '92%',
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,

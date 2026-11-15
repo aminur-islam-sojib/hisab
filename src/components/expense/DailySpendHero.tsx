@@ -14,7 +14,7 @@ export interface DailySpendHeroProps {
   className?: string;
 }
 
-export function DailySpendHero({
+export const DailySpendHero = React.memo(function DailySpendHero({
   spentMinor,
   limitMinor,
   incomeMinor = 0,
@@ -66,4 +66,4 @@ export function DailySpendHero({
       />
     </Card>
   );
-}
+});

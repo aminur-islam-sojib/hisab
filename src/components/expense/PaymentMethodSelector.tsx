@@ -16,7 +16,7 @@ const METHODS: Array<{ id: PaymentMethod; label: string; icon: string }> = [
   { id: 'bank', label: 'Bank', icon: 'Building2' },
 ];
 
-export function PaymentMethodSelector({
+export const PaymentMethodSelector = React.memo(function PaymentMethodSelector({
   selected,
   onSelect,
   className = '',
@@ -55,7 +55,7 @@ export function PaymentMethodSelector({
       })}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

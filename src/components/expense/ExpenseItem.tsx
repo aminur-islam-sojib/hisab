@@ -24,7 +24,7 @@ const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   bank: 'Bank',
 };
 
-export function ExpenseItem({
+export const ExpenseItem = React.memo(function ExpenseItem({
   expense,
   category,
   currencySymbol = '৳',
@@ -138,7 +138,7 @@ export function ExpenseItem({
       </View>
     </Pressable>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

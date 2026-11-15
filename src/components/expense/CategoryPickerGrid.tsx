@@ -11,7 +11,7 @@ export interface CategoryPickerGridProps {
   className?: string;
 }
 
-export function CategoryPickerGrid({
+export const CategoryPickerGrid = React.memo(function CategoryPickerGrid({
   categories,
   selectedCategoryId,
   onSelectCategory,
@@ -87,7 +87,7 @@ export function CategoryPickerGrid({
       </View>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   gridItem: {

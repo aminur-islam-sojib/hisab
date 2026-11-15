@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/useAppStore';
 import {
@@ -48,13 +48,29 @@ export default function TodayScreen() {
   const isToday = selectedDate === getLocalTodayDateString();
   const heroDateLabel = isToday ? "Today's Total Spend" : 'Total Daily Spend';
 
-  const handleExpensePress = (item: Expense) => {
+  const handleExpensePress = useCallback((item: Expense) => {
     setModalConfig({ visible: true, type: item.type ?? 'expense', expenseToEdit: item });
-  };
+  }, []);
 
-  const handleAddTransaction = (type: TransactionType) => {
+  const handleAddTransaction = useCallback((type: TransactionType) => {
     setModalConfig({ visible: true, type, expenseToEdit: null });
-  };
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setModalConfig((prev) => ({ ...prev, visible: false }));
+  }, []);
+
+  const renderExpenseItem = useCallback(({ item }: { item: Expense }) => (
+    <ExpenseItem
+      expense={item}
+      category={categoryMap.get(item.categoryId)}
+      currencySymbol={settings.currencySymbol}
+      showDecimals={settings.showDecimals}
+      onPress={handleExpensePress}
+      onEdit={handleExpensePress}
+      onDelete={deleteExpense}
+    />
+  ), [categoryMap, settings.currencySymbol, settings.showDecimals, handleExpensePress, deleteExpense]);
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#F7F4EF]">
@@ -68,6 +84,10 @@ export default function TodayScreen() {
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
+          initialNumToRender={8}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={Platform.OS === 'android'}
           ListHeaderComponent={
             <View className="mt-2">
               <DailySpendHero
@@ -87,17 +107,7 @@ export default function TodayScreen() {
               <PaymentFilterChips selected={selectedPayment} onSelect={setSelectedPayment} className="mb-3" />
             </View>
           }
-          renderItem={({ item }) => (
-            <ExpenseItem
-              expense={item}
-              category={categoryMap.get(item.categoryId)}
-              currencySymbol={settings.currencySymbol}
-              showDecimals={settings.showDecimals}
-              onPress={handleExpensePress}
-              onEdit={handleExpensePress}
-              onDelete={deleteExpense}
-            />
-          )}
+          renderItem={renderExpenseItem}
           ListEmptyComponent={
             <View className="items-center justify-center py-12 px-4">
               <View className="w-16 h-16 rounded-full bg-[#ECE8DF] items-center justify-center mb-3">
@@ -142,7 +152,7 @@ export default function TodayScreen() {
         visible={modalConfig.visible}
         type={modalConfig.type}
         expenseToEdit={modalConfig.expenseToEdit}
-        onClose={() => setModalConfig((prev) => ({ ...prev, visible: false }))}
+        onClose={handleCloseModal}
       />
     </SafeAreaView>
   );

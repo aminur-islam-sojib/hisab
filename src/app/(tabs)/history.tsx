@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, SectionList, StyleSheet } from 'react-native';
+import { View, Text, SectionList, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/store/useAppStore';
 import { selectCategoryMap, selectGroupedExpensesByDate } from '@/store/selectors';
@@ -68,6 +68,10 @@ export default function HistoryScreen() {
           stickySectionHeadersEnabled
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={Platform.OS === 'android'}
           renderSectionHeader={({ section }) => (
             <View style={styles.sectionHeader} className="flex-row items-center justify-between py-2 px-1 bg-[#F7F4EF]">
               <Text className="text-xs font-bold text-[#71717A] uppercase tracking-wider">{section.title}</Text>
