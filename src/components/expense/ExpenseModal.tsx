@@ -107,7 +107,7 @@ export function ExpenseModal({
     );
   }, [categories, transactionType]);
 
-  const defaultCategoryId = activeCategories[0]?.id ?? (transactionType === 'income' ? 'cat_salary' : 'cat_salary_expense');
+  const defaultCategoryId = activeCategories[0]?.id ?? (transactionType === 'income' ? 'cat_salary' : 'cat_food');
 
   const [amountStr, setAmountStr] = useState<string>('');
   const [categoryId, setCategoryId] = useState<string>(defaultCategoryId);
@@ -194,7 +194,7 @@ export function ExpenseModal({
         setAmountStr('');
         setCategoryId(
           activeCategories[0]?.id ??
-            (transactionType === 'income' ? 'cat_salary' : 'cat_salary_expense')
+            (transactionType === 'income' ? 'cat_salary' : 'cat_food')
         );
         setPaymentMethod('cash');
         setNote('');

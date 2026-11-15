@@ -13,17 +13,6 @@ export const DEFAULT_CATEGORIES: Category[] = [
   // Expense Categories
 
   {
-    id: 'cat_gift_expense',
-    name: 'Gift',
-    icon: 'Gift',
-    color: '#EC4899',
-    type: 'expense',
-    isDefault: true,
-    isArchived: false,
-    sortOrder: 3,
-    createdAt: 1700000000000,
-  },
-  {
     id: 'cat_food',
     name: 'Food',
     icon: 'Utensils',
@@ -31,7 +20,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     type: 'expense',
     isDefault: true,
     isArchived: false,
-    sortOrder: 4,
+    sortOrder: 0,
     createdAt: 1700000000000,
   },
   {
@@ -156,10 +145,10 @@ export const DEFAULT_CATEGORIES: Category[] = [
     createdAt: 1700000000000,
   },
   {
-    id: 'cat_other',
-    name: 'Other',
-    icon: 'MoreHorizontal',
-    color: '#52525B',
+    id: 'cat_gift_expense',
+    name: 'Gift',
+    icon: 'Gift',
+    color: '#EC4899',
     type: 'expense',
     isDefault: true,
     isArchived: false,

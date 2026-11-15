@@ -219,11 +219,38 @@ export const useAppStore = create<AppStoreState>()(
             type: cat.type || 'expense',
           }));
 
+          // Purge unwanted categories from Expense list:
+          // User requested removal of salary, business, freelance, other from expense
+          const unwantedExpenseNames = new Set(['salary', 'selery', 'business', 'freelance', 'other']);
+          const unwantedExpenseIds = new Set([
+            'cat_other',
+            'cat_salary_expense',
+            'cat_business_expense',
+            'cat_freelance_expense',
+          ]);
+
+          const purged = normalized.filter((cat) => {
+            const isExpense = (cat.type ?? 'expense') === 'expense';
+            if (!isExpense) return true; // keep income categories
+            const nameLower = cat.name.trim().toLowerCase();
+            return !unwantedExpenseNames.has(nameLower) && !unwantedExpenseIds.has(cat.id);
+          });
+
+          // Re-map any expenses pointing to removed category IDs to cat_food
+          if (state.expenses && state.expenses.length > 0) {
+            state.expenses = state.expenses.map((exp) => {
+              if (unwantedExpenseIds.has(exp.categoryId)) {
+                return { ...exp, categoryId: 'cat_food' };
+              }
+              return exp;
+            });
+          }
+
           // Merge any newly introduced default categories
-          const existingIds = new Set(normalized.map((c) => c.id));
+          const existingIds = new Set(purged.map((c) => c.id));
           const missingDefaults = DEFAULT_CATEGORIES.filter((d) => !existingIds.has(d.id));
 
-          state.categories = missingDefaults.length > 0 ? [...normalized, ...missingDefaults] : normalized;
+          state.categories = missingDefaults.length > 0 ? [...purged, ...missingDefaults] : purged;
           state.setHasHydrated(true);
         }
       },
