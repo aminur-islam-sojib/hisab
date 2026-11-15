@@ -27,9 +27,9 @@
 
 ## Milestone 4: Analytics & Transaction History
 
-- [ ] Implement `src/app/(tabs)/analytics.tsx` with period toggle (`This Week`, `This Month`), summary metric cards, and category percentage breakdown bars.
-- [ ] Build a lightweight 7-day / 30-day vertical bar chart component comparing daily spend against the daily budget limit.
-- [ ] Implement `src/app/(tabs)/history.tsx` with search input (filters by note), category/payment filter chips, and a `SectionList` grouped by `spentAtDate` showing daily totals in sticky headers.
+- [x] Implement `src/app/(tabs)/analytics.tsx` with period toggle (`This Week`, `This Month`), summary metric cards, and category percentage breakdown bars.
+- [x] Build a lightweight 7-day / 30-day vertical bar chart component comparing daily spend against the daily budget limit.
+- [x] Implement `src/app/(tabs)/history.tsx` with search input (filters by note), category/payment filter chips, and a `SectionList` grouped by `spentAtDate` showing daily totals in sticky headers.
 
 ## Milestone 5: Settings, Categories & JSON/CSV Backup System
 
