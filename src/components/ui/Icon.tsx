@@ -39,6 +39,16 @@ import {
   LucideIcon,
   LucideProps,
   Delete,
+  Home,
+  Users,
+  Film,
+  GraduationCap,
+  Laptop,
+  ShoppingCart,
+  Wifi,
+  Phone,
+  Landmark,
+  Banknote,
 } from 'lucide-react-native';
 
 export const ICON_MAP: Record<string, LucideIcon> = {
@@ -79,6 +89,16 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   DollarSign,
   HelpCircle,
   Delete,
+  Home,
+  Users,
+  Film,
+  GraduationCap,
+  Laptop,
+  ShoppingCart,
+  Wifi,
+  Phone,
+  Landmark,
+  Banknote,
 };
 
 import { ColorValue } from 'react-native';

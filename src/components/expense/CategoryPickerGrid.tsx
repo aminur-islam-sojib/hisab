@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Category } from '@/models/schema';
 import { Icon } from '@/components/ui/Icon';
 
@@ -7,6 +7,7 @@ export interface CategoryPickerGridProps {
   categories: Category[];
   selectedCategoryId: string;
   onSelectCategory: (categoryId: string) => void;
+  onAddCategoryPress?: () => void;
   className?: string;
 }
 
@@ -14,85 +15,114 @@ export function CategoryPickerGrid({
   categories,
   selectedCategoryId,
   onSelectCategory,
+  onAddCategoryPress,
   className = '',
 }: CategoryPickerGridProps) {
   const activeCategories = categories
     .filter((cat) => !cat.isArchived)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 
-  // Split into 2 rows for a 2-row horizontal pill grid
-  const row1 = activeCategories.filter((_, idx) => idx % 2 === 0);
-  const row2 = activeCategories.filter((_, idx) => idx % 2 !== 0);
-
-  const renderPill = (category: Category) => {
-    const isSelected = category.id === selectedCategoryId;
-
-    return (
-      <Pressable
-        key={category.id}
-        onPress={() => onSelectCategory(category.id)}
-        style={[
-          styles.pill,
-          isSelected ? styles.selectedPill : styles.unselectedPill,
-        ]}
-        className={`flex-row items-center rounded-2xl px-3.5 mr-2.5 ${
-          isSelected
-            ? 'bg-[#FFF0EB] border-[#FF5A1F]'
-            : 'bg-white border-[#E4E0D8]'
-        }`}
-      >
-        <View
-          style={[styles.iconCircle, { backgroundColor: category.color }]}
-          className="items-center justify-center mr-2 rounded-full"
-        >
-          <Icon name={category.icon} size={15} color="#FFFFFF" strokeWidth={2.2} />
-        </View>
-        <Text
-          className={`text-sm font-semibold ${
-            isSelected ? 'text-[#18181B]' : 'text-[#71717A]'
-          }`}
-        >
-          {category.name}
-        </Text>
-      </Pressable>
-    );
-  };
-
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContainer}
-      className={`py-1 ${className}`}
-    >
-      <View>
-        <View className="flex-row mb-2">
-          {row1.map(renderPill)}
-        </View>
-        <View className="flex-row">
-          {row2.map(renderPill)}
-        </View>
+    <View className={`w-full ${className}`}>
+      <View className="flex-row flex-wrap justify-between">
+        {activeCategories.map((category) => {
+          const isSelected = category.id === selectedCategoryId;
+
+          return (
+            <Pressable
+              key={category.id}
+              onPress={() => onSelectCategory(category.id)}
+              style={styles.gridItem}
+            >
+              <View
+                style={[
+                  styles.squircle,
+                  { backgroundColor: category.color },
+                  isSelected && styles.selectedSquircle,
+                ]}
+              >
+                <Icon
+                  name={category.icon}
+                  size={24}
+                  color="#FFFFFF"
+                  strokeWidth={2.2}
+                />
+              </View>
+              <Text
+                numberOfLines={1}
+                className={`text-xs text-center mt-1.5 ${
+                  isSelected
+                    ? 'font-bold text-[#18181B]'
+                    : 'font-medium text-[#52525B]'
+                }`}
+              >
+                {category.name}
+              </Text>
+            </Pressable>
+          );
+        })}
+
+        {/* Add Category Button Tile */}
+        {onAddCategoryPress && (
+          <Pressable
+            onPress={onAddCategoryPress}
+            style={styles.gridItem}
+          >
+            <View style={styles.addSquircle}>
+              <Icon name="Plus" size={22} color="#18181B" strokeWidth={2.4} />
+            </View>
+            <Text
+              numberOfLines={1}
+              className="text-xs font-medium text-[#71717A] text-center mt-1.5"
+            >
+              Add
+            </Text>
+          </Pressable>
+        )}
+
+        {/* Spacer items to ensure left-alignment on the last row */}
+        <View style={styles.spacer} />
+        <View style={styles.spacer} />
+        <View style={styles.spacer} />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollContainer: {
-    paddingRight: 16,
+  gridItem: {
+    width: '23%',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  pill: {
-    minHeight: 44,
+  squircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectedSquircle: {
+    borderWidth: 3.5,
+    borderColor: '#18181B',
+    shadowColor: '#18181B',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  addSquircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
+    borderColor: '#D1CDC7',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  selectedPill: {
-    borderColor: '#FF5A1F',
-  },
-  unselectedPill: {
-    borderColor: '#E4E0D8',
-  },
-  iconCircle: {
-    width: 28,
-    height: 28,
+  spacer: {
+    width: '23%',
+    height: 0,
   },
 });

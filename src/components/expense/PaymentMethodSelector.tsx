@@ -59,8 +59,8 @@ export function PaymentMethodSelector({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(228, 224, 216, 0.4)',
-    borderColor: 'rgba(228, 224, 216, 0.6)',
+    backgroundColor: '#ECE8DF',
+    borderColor: '#E4E0D8',
     borderWidth: 1,
   },
   segment: {

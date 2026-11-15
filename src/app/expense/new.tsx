@@ -19,8 +19,8 @@ export default function NewExpenseScreen() {
 
   return (
     <ExpenseForm
-      title="Add Expense"
-      submitLabel="Save Expense"
+      title="Add expense"
+      submitLabel="Save"
       onSubmit={handleSubmit}
     />
   );

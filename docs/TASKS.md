@@ -20,7 +20,7 @@
 
 ## Milestone 3: Quick-Add & Edit Expense Modal
 
-- [x] Build `src/components/expense/NumericKeypad.tsx` with quick-add chips (`+50`, `+100`, `+500`) and basic inline `+ / -` evaluation.
+- [x] Integrate phone built-in number keyboard (`keyboardType="decimal-pad"`) with quick-add chips (`+50`, `+100`, `+500`, `Clear`).
 - [x] Build `src/components/expense/CategoryPickerGrid.tsx` (2-row selectable pill grid).
 - [x] Implement `src/app/expense/new.tsx` and `src/app/expense/[id].tsx` modals with `KeyboardAvoidingView`, payment method segmented control, note input, and date selector.
 - [x] Connect save/update/delete actions to `useAppStore` and verify instant dashboard updates.
