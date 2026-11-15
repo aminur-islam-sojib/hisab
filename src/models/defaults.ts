@@ -1,0 +1,93 @@
+import { BudgetSettings, Category } from './schema';
+
+export const DEFAULT_BUDGET_SETTINGS: BudgetSettings = {
+  dailyLimitMinor: 50000, // ৳500
+  monthlyLimitMinor: 1500000, // ৳15,000
+  currencySymbol: '৳',
+  currencyCode: 'BDT',
+  showDecimals: false,
+  updatedAt: 1700000000000,
+};
+
+export const DEFAULT_CATEGORIES: Category[] = [
+  {
+    id: 'cat_food',
+    name: 'Food & Dining',
+    icon: 'Utensils',
+    color: '#FF5A1F',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 0,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_tea_snacks',
+    name: 'Tea & Snacks',
+    icon: 'Coffee',
+    color: '#F97316',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 1,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_transport',
+    name: 'Transport',
+    icon: 'Bus',
+    color: '#2563EB',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 2,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_groceries',
+    name: 'Groceries',
+    icon: 'ShoppingBag',
+    color: '#0891B2',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 3,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_bills',
+    name: 'Bills & Recharge',
+    icon: 'Receipt',
+    color: '#EAB308',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 4,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_shopping',
+    name: 'Shopping',
+    icon: 'Tag',
+    color: '#E11D48',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 5,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_health',
+    name: 'Health & Pharmacy',
+    icon: 'HeartPulse',
+    color: '#10B981',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 6,
+    createdAt: 1700000000000,
+  },
+  {
+    id: 'cat_other',
+    name: 'Other',
+    icon: 'MoreHorizontal',
+    color: '#141414',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 7,
+    createdAt: 1700000000000,
+  },
+];
