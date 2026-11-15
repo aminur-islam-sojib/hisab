@@ -1,6 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withDelay,
+  Easing,
+} from 'react-native-reanimated';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/utils/currency';
 import { Icon } from '@/components/ui/Icon';
@@ -48,6 +56,92 @@ function createArcPath(cx: number, cy: number, r: number, startAngle: number, en
   return `M ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
 }
 
+// Animated Category Breakdown Row with flowing proportion bar
+const AnimatedCategoryRow = React.memo(function AnimatedCategoryRow({
+  item,
+  index,
+  currencySymbol,
+  showDecimals,
+  onPress,
+}: {
+  item: CategoryBreakdownItem;
+  index: number;
+  currencySymbol: string;
+  showDecimals: boolean;
+  onPress?: () => void;
+}) {
+  const barWidth = useSharedValue(0);
+  const rowOpacity = useSharedValue(0);
+
+  useEffect(() => {
+    barWidth.value = 0;
+    rowOpacity.value = 0;
+
+    rowOpacity.value = withDelay(index * 30, withTiming(1, { duration: 220 }));
+    barWidth.value = withDelay(
+      index * 35,
+      withTiming(Math.min(100, Math.max(3, item.percentage)), {
+        duration: 380,
+        easing: Easing.bezier(0.16, 1, 0.3, 1),
+      })
+    );
+  }, [item.percentage, item.categoryId, index]);
+
+  const animatedBarStyle = useAnimatedStyle(() => ({
+    width: `${barWidth.value}%`,
+  }));
+
+  const animatedRowStyle = useAnimatedStyle(() => ({
+    opacity: rowOpacity.value,
+  }));
+
+  return (
+    <Animated.View style={animatedRowStyle}>
+      <Pressable
+        onPress={onPress}
+        className="py-2 border-t border-[#F0ECE4] active:opacity-75"
+      >
+        {/* Main Info Row */}
+        <View className="flex-row items-center justify-between">
+          {/* Category Icon + Info */}
+          <View className="flex-row items-center flex-1 mr-3">
+            <View
+              style={{ backgroundColor: item.color }}
+              className="w-10 h-10 rounded-2xl items-center justify-center mr-3 shadow-xs"
+            >
+              <Icon name={item.icon} size={18} color="#FFFFFF" strokeWidth={2.4} />
+            </View>
+            <View className="flex-1">
+              <Text numberOfLines={1} className="text-sm font-bold text-[#18181B]">
+                {item.categoryName}
+              </Text>
+              <Text className="text-xs font-semibold text-[#71717A]">
+                {item.percentage.toFixed(0)}%
+              </Text>
+            </View>
+          </View>
+
+          {/* Amount + Chevron */}
+          <View className="flex-row items-center">
+            <Text className="text-sm font-black text-[#18181B] mr-2">
+              {formatCurrency(item.amountMinor, { currencySymbol, showDecimals })}
+            </Text>
+            <Icon name="ChevronRight" size={16} color="#A1A1AA" strokeWidth={2.2} />
+          </View>
+        </View>
+
+        {/* Animated Horizontal Proportion Bar */}
+        <View className="h-1.5 w-full bg-[#EFECE6] rounded-full overflow-hidden mt-2">
+          <Animated.View
+            style={[animatedBarStyle, { backgroundColor: item.color }]}
+            className="h-full rounded-full"
+          />
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+});
+
 export const CoinPieCard = React.memo(function CoinPieCard({
   monthName,
   selectedDate,
@@ -66,6 +160,13 @@ export const CoinPieCard = React.memo(function CoinPieCard({
 }: CoinPieCardProps) {
   const [activeTab, setActiveTab] = useState<CoinPieTab>('today');
   const [todaySubTab, setTodaySubTab] = useState<'expense' | 'income'>('expense');
+
+  // Shared values for chart motion
+  const chartScale = useSharedValue(1);
+  const chartRotation = useSharedValue(0);
+  const chartOpacity = useSharedValue(1);
+  const centerScale = useSharedValue(1);
+  const centerOpacity = useSharedValue(1);
 
   const isToday = selectedDate === getLocalTodayDateString();
   const dateDisplay = format(parseLocalDateString(selectedDate), 'd MMM');
@@ -119,6 +220,37 @@ export const CoinPieCard = React.memo(function CoinPieCard({
     dateDisplay,
     monthName,
   ]);
+
+  // Trigger fluid chart entrance motion on tab or data change
+  useEffect(() => {
+    // Reset to start of motion
+    chartScale.value = 0.88;
+    chartRotation.value = -16;
+    chartOpacity.value = 0.3;
+    centerScale.value = 0.84;
+    centerOpacity.value = 0.2;
+
+    // Apple-style fluid spring deceleration
+    chartScale.value = withSpring(1, { damping: 14, stiffness: 140 });
+    chartRotation.value = withSpring(0, { damping: 13, stiffness: 120 });
+    chartOpacity.value = withTiming(1, { duration: 240, easing: Easing.out(Easing.quad) });
+
+    centerScale.value = withDelay(40, withSpring(1, { damping: 13, stiffness: 150 }));
+    centerOpacity.value = withTiming(1, { duration: 220 });
+  }, [activeTab, todaySubTab, selectedDate, currentTotalMinor]);
+
+  const animatedChartStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: chartScale.value },
+      { rotate: `${chartRotation.value}deg` },
+    ],
+    opacity: chartOpacity.value,
+  }));
+
+  const animatedCenterStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: centerScale.value }],
+    opacity: centerOpacity.value,
+  }));
 
   // Calculate arc segments for the donut chart
   const slices = useMemo(() => {
@@ -229,7 +361,7 @@ export const CoinPieCard = React.memo(function CoinPieCard({
         <View className="flex-row items-center justify-center gap-2 mb-2">
           <Pressable
             onPress={() => setTodaySubTab('expense')}
-            className={`flex-row items-center px-3.5 py-1.5 rounded-full border ${
+            className={`flex-row items-center px-3.5 py-1.5 rounded-full border active:opacity-85 ${
               todaySubTab === 'expense'
                 ? 'bg-[#FFF0EB] border-[#FF5A1F]'
                 : 'bg-[#F4F1EA] border-[#E4E0D8]'
@@ -247,7 +379,7 @@ export const CoinPieCard = React.memo(function CoinPieCard({
 
           <Pressable
             onPress={() => setTodaySubTab('income')}
-            className={`flex-row items-center px-3.5 py-1.5 rounded-full border ${
+            className={`flex-row items-center px-3.5 py-1.5 rounded-full border active:opacity-85 ${
               todaySubTab === 'income'
                 ? 'bg-[#EBFDF5] border-[#10B981]'
                 : 'bg-[#F4F1EA] border-[#E4E0D8]'
@@ -265,95 +397,75 @@ export const CoinPieCard = React.memo(function CoinPieCard({
         </View>
       )}
 
-      {/* Donut Chart with Center Text */}
+      {/* Animated Donut Chart with Center Text */}
       <View className="items-center justify-center my-2">
         <View style={{ width: CHART_SIZE, height: CHART_SIZE }} className="items-center justify-center relative">
-          <Svg width={CHART_SIZE} height={CHART_SIZE} style={StyleSheet.absoluteFill}>
-            <G>
-              {slices.length === 0 ? (
-                // Empty subtle background ring
-                <Circle
-                  cx={CX}
-                  cy={CY}
-                  r={RADIUS}
-                  stroke="#EFEBE4"
-                  strokeWidth={THICKNESS}
-                  fill="none"
-                />
-              ) : (
-                slices.map((slice) =>
-                  slice.isFullCircle ? (
-                    <Circle
-                      key={slice.id}
-                      cx={CX}
-                      cy={CY}
-                      r={RADIUS}
-                      stroke={slice.color}
-                      strokeWidth={THICKNESS}
-                      fill="none"
-                    />
-                  ) : (
-                    <Path
-                      key={slice.id}
-                      d={slice.path ?? ''}
-                      stroke={slice.color}
-                      strokeWidth={THICKNESS}
-                      strokeLinecap="round"
-                      fill="none"
-                    />
+          {/* Animated SVG Donut Ring */}
+          <Animated.View style={[StyleSheet.absoluteFill, animatedChartStyle]}>
+            <Svg width={CHART_SIZE} height={CHART_SIZE}>
+              <G>
+                {slices.length === 0 ? (
+                  // Empty subtle background ring
+                  <Circle
+                    cx={CX}
+                    cy={CY}
+                    r={RADIUS}
+                    stroke="#EFEBE4"
+                    strokeWidth={THICKNESS}
+                    fill="none"
+                  />
+                ) : (
+                  slices.map((slice) =>
+                    slice.isFullCircle ? (
+                      <Circle
+                        key={slice.id}
+                        cx={CX}
+                        cy={CY}
+                        r={RADIUS}
+                        stroke={slice.color}
+                        strokeWidth={THICKNESS}
+                        fill="none"
+                      />
+                    ) : (
+                      <Path
+                        key={slice.id}
+                        d={slice.path ?? ''}
+                        stroke={slice.color}
+                        strokeWidth={THICKNESS}
+                        strokeLinecap="round"
+                        fill="none"
+                      />
+                    )
                   )
-                )
-              )}
-            </G>
-          </Svg>
+                )}
+              </G>
+            </Svg>
+          </Animated.View>
 
-          {/* Center Hole Content */}
-          <View className="items-center justify-center px-4">
+          {/* Animated Center Hole Content */}
+          <Animated.View style={animatedCenterStyle} className="items-center justify-center px-4">
             <Text numberOfLines={1} className="text-xs font-semibold text-[#71717A] mb-0.5 text-center">
               {centerLabel}
             </Text>
             <Text numberOfLines={1} className="text-2xl font-black text-[#18181B] text-center">
               {formatCurrency(currentTotalMinor, { currencySymbol, showDecimals })}
             </Text>
-          </View>
+          </Animated.View>
         </View>
       </View>
 
-      {/* Category Breakdown List */}
+      {/* Animated Category Breakdown List with Staggered Bars */}
       {currentBreakdown.length > 0 ? (
-        <View className="mt-3 gap-2.5">
-          {currentBreakdown.slice(0, 5).map((item) => (
-            <Pressable
-              key={item.categoryId}
+        <View className="mt-3 gap-1">
+          {currentBreakdown.slice(0, 5).map((item, index) => (
+            <AnimatedCategoryRow
+              key={`${item.categoryId}-${index}`}
+              item={item}
+              index={index}
+              currencySymbol={currencySymbol}
+              showDecimals={showDecimals}
               onPress={() => onSelectCategory?.(item.categoryId)}
-              className="flex-row items-center justify-between py-2 border-t border-[#F0ECE4] active:opacity-70"
-            >
-              {/* Category Icon + Info */}
-              <View className="flex-row items-center flex-1 mr-3">
-                <View
-                  style={{ backgroundColor: item.color }}
-                  className="w-10 h-10 rounded-2xl items-center justify-center mr-3 shadow-xs"
-                >
-                  <Icon name={item.icon} size={18} color="#FFFFFF" strokeWidth={2.4} />
-                </View>
-                <View className="flex-1">
-                  <Text numberOfLines={1} className="text-sm font-bold text-[#18181B]">
-                    {item.categoryName}
-                  </Text>
-                  <Text className="text-xs font-semibold text-[#71717A]">
-                    {item.percentage.toFixed(0)}%
-                  </Text>
-                </View>
-              </View>
-
-              {/* Amount + Chevron */}
-              <View className="flex-row items-center">
-                <Text className="text-sm font-extrabold text-[#18181B] mr-2">
-                  {formatCurrency(item.amountMinor, { currencySymbol, showDecimals })}
-                </Text>
-                <Icon name="ChevronRight" size={16} color="#A1A1AA" strokeWidth={2.2} />
-              </View>
-            </Pressable>
+            />
           ))}
         </View>
       ) : (

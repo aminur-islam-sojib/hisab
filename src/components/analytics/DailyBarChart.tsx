@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withDelay,
+  withSpring,
+} from 'react-native-reanimated';
 import { DailyChartPoint } from '@/store/selectors';
 import { formatCurrency } from '@/utils/currency';
 import { Card } from '@/components/ui/Card';
@@ -11,6 +17,43 @@ export interface DailyBarChartProps {
   currencySymbol?: string;
   className?: string;
 }
+
+const AnimatedBar = React.memo(function AnimatedBar({
+  heightPercent,
+  barColor,
+  isWeek,
+  index,
+}: {
+  heightPercent: number;
+  barColor: string;
+  isWeek: boolean;
+  index: number;
+}) {
+  const animatedHeight = useSharedValue(0);
+
+  useEffect(() => {
+    animatedHeight.value = 0;
+    animatedHeight.value = withDelay(
+      index * 30,
+      withSpring(heightPercent, { damping: 14, stiffness: 120 })
+    );
+  }, [heightPercent, index]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: `${animatedHeight.value}%`,
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        styles.barFill,
+        animatedStyle,
+        { backgroundColor: barColor },
+      ]}
+      className={isWeek ? 'w-5 rounded-t-md' : 'w-3 rounded-t-sm'}
+    />
+  );
+});
 
 export function DailyBarChart({
   data,
@@ -53,15 +96,11 @@ export function DailyBarChart({
       >
         {/* Bar container */}
         <View style={styles.barTrack} className="w-full items-center justify-end">
-          <View
-            style={[
-              styles.barFill,
-              {
-                height: `${heightPercent}%`,
-                backgroundColor: barColor,
-              },
-            ]}
-            className={isWeek ? 'w-5 rounded-t-md' : 'w-3 rounded-t-sm'}
+          <AnimatedBar
+            heightPercent={heightPercent}
+            barColor={barColor}
+            isWeek={isWeek}
+            index={index}
           />
         </View>
 
@@ -101,33 +140,35 @@ export function DailyBarChart({
         </View>
       </View>
 
-      {/* Chart Canvas with Budget Limit Guide Line */}
-      <View style={styles.canvasContainer} className="relative justify-end">
-        {/* Budget Limit Guide Line */}
-        <View
-          style={[styles.limitLine, { bottom: `${limitLinePercent}%` }]}
-          className="absolute left-0 right-0 border-b border-dashed border-[#DC2626] flex-row justify-end"
-        >
-          <View className="bg-[#FAF8F5] px-1 -top-2.5">
-            <Text className="text-[9px] font-bold text-[#DC2626]">
-              Limit {formatCurrency(dailyLimitMinor, { currencySymbol })}
-            </Text>
+      {/* Chart Canvas Area */}
+      <View style={styles.chartArea} className="w-full relative justify-end mb-2">
+        {/* Horizontal Threshold Line for Daily Budget */}
+        {dailyLimitMinor > 0 && (
+          <View
+            style={[styles.limitLine, { bottom: `${limitLinePercent}%` }]}
+            className="w-full border-b border-dashed border-[#A1A1AA] absolute z-10 flex-row justify-end"
+          >
+            <View className="bg-[#FAF8F5] px-1 rounded -top-2.5">
+              <Text className="text-[9px] font-bold text-[#71717A]">
+                Limit {formatCurrency(dailyLimitMinor, { currencySymbol, showDecimals: false })}
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Bars Container */}
         {isWeek ? (
-          <View className="flex-row items-end justify-between w-full h-full">
-            {data.map(renderBar)}
+          <View className="flex-row items-end justify-between w-full h-full pt-4">
+            {data.map((item, index) => renderBar(item, index))}
           </View>
         ) : (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.monthScroll}
-            className="w-full h-full"
+            contentContainerStyle={styles.scrollBarContainer}
+            className="w-full h-full pt-4"
           >
-            {data.map(renderBar)}
+            {data.map((item, index) => renderBar(item, index))}
           </ScrollView>
         )}
       </View>
@@ -136,24 +177,23 @@ export function DailyBarChart({
 }
 
 const styles = StyleSheet.create({
-  canvasContainer: {
-    height: 140,
-    width: '100%',
-  },
-  barColumn: {
+  chartArea: {
     height: 140,
   },
   barTrack: {
-    height: 115,
+    height: 110,
+  },
+  barColumn: {
+    minWidth: 28,
   },
   barFill: {
     minHeight: 3,
   },
   limitLine: {
-    zIndex: 1,
+    left: 0,
+    right: 0,
   },
-  monthScroll: {
-    paddingRight: 10,
-    alignItems: 'flex-end',
+  scrollBarContainer: {
+    paddingRight: 12,
   },
 });

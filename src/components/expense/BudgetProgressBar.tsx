@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { formatCurrency } from '@/utils/currency';
 
 export interface BudgetProgressBarProps {
@@ -25,8 +31,22 @@ export function BudgetProgressBar({
   const isOverBudget = safeLimit > 0 && safeSpent >= safeLimit;
   const isNearLimit = safeLimit > 0 && percentage >= 80 && percentage < 100;
 
+  // Reanimated width animation
+  const progressWidth = useSharedValue(0);
+
+  useEffect(() => {
+    progressWidth.value = withTiming(clampedPercentage, {
+      duration: 500,
+      easing: Easing.bezier(0.16, 1, 0.3, 1),
+    });
+  }, [clampedPercentage]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    width: `${progressWidth.value}%`,
+  }));
+
   // Determine color scheme
-  let barColor = '#FF5A1F'; // Default accent orange
+  let barColor = '#FF5A1F';
   let statusTextColor = '#71717A';
   let statusText = `${Math.round(percentage)}% of daily limit`;
 
@@ -62,13 +82,11 @@ export function BudgetProgressBar({
 
       {/* Progress track */}
       <View className="h-2.5 w-full bg-[#E4E0D8] rounded-full overflow-hidden">
-        <View
+        <Animated.View
           style={[
             styles.progressFill,
-            {
-              width: `${clampedPercentage}%`,
-              backgroundColor: barColor,
-            },
+            animatedStyle,
+            { backgroundColor: barColor },
           ]}
         />
       </View>
