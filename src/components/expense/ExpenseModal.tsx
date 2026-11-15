@@ -10,6 +10,7 @@ import {
   Alert,
   Platform,
   KeyboardAvoidingView,
+  Keyboard,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -43,6 +44,8 @@ export interface ExpenseModalProps {
   expenseToEdit?: Expense | null;
   onClose: () => void;
 }
+
+const SHEET_HEIGHT = 700;
 
 const PRESET_COLORS = [
   '#FF5A1F',
@@ -89,10 +92,11 @@ export function ExpenseModal({
   const addCategory = useAppStore((state) => state.addCategory);
 
   const inputRef = useRef<React.ComponentRef<typeof TextInput>>(null);
+  const hasAnimatedOpen = useRef(false);
 
   // Reanimated UI-thread shared values
   const [isModalMounted, setIsModalMounted] = useState(visible);
-  const translateY = useSharedValue(600);
+  const translateY = useSharedValue(SHEET_HEIGHT);
   const backdropOpacity = useSharedValue(0);
 
   const transactionType: TransactionType = expenseToEdit?.type ?? type;
@@ -121,35 +125,52 @@ export function ExpenseModal({
   const [newCatColor, setNewCatColor] = useState(PRESET_COLORS[0]);
   const [newCatIcon, setNewCatIcon] = useState(PRESET_ICONS[0]);
 
+  const startOpenAnimation = useCallback(() => {
+    if (hasAnimatedOpen.current) return;
+    hasAnimatedOpen.current = true;
+    // Apple fluid deceleration curve for ultra-smooth 60/120fps opening
+    translateY.value = withTiming(0, {
+      duration: 320,
+      easing: Easing.bezier(0.16, 1, 0.3, 1),
+    });
+    backdropOpacity.value = withTiming(1, {
+      duration: 260,
+      easing: Easing.out(Easing.quad),
+    });
+
+    // Orchestrate keyboard focus AFTER slide-up completes (prevents Android layout thrashing)
+    if (!expenseToEdit) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 290);
+    }
+  }, [expenseToEdit]);
+
   // Handle open / close animations on UI thread
   useEffect(() => {
     if (visible) {
+      hasAnimatedOpen.current = false;
+      // Pre-set offscreen before native modal paints
+      translateY.value = SHEET_HEIGHT;
+      backdropOpacity.value = 0;
       setIsModalMounted(true);
-      translateY.value = withTiming(0, {
-        duration: 250,
-        easing: Easing.out(Easing.cubic),
-      });
-      backdropOpacity.value = withTiming(1, {
-        duration: 200,
-        easing: Easing.out(Easing.quad),
-      });
 
-      // Smoothly orchestrate keyboard opening after slide begins (avoids frame drops)
-      if (!expenseToEdit) {
-        const timer = setTimeout(() => {
-          inputRef.current?.focus();
-        }, 90);
-        return () => clearTimeout(timer);
-      }
+      // Trigger animation after native dialog initialization
+      const timer = setTimeout(() => {
+        startOpenAnimation();
+      }, 35);
+      return () => clearTimeout(timer);
     } else {
-      translateY.value = withTiming(600, {
-        duration: 200,
-        easing: Easing.in(Easing.cubic),
+      hasAnimatedOpen.current = false;
+      Keyboard.dismiss();
+      translateY.value = withTiming(SHEET_HEIGHT, {
+        duration: 240,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
       });
       backdropOpacity.value = withTiming(
         0,
         {
-          duration: 180,
+          duration: 200,
           easing: Easing.in(Easing.quad),
         },
         (finished) => {
@@ -159,7 +180,7 @@ export function ExpenseModal({
         }
       );
     }
-  }, [visible, expenseToEdit]);
+  }, [visible, startOpenAnimation]);
 
   // Synchronize form state on open
   useEffect(() => {
@@ -200,14 +221,16 @@ export function ExpenseModal({
   }));
 
   const handleDismiss = useCallback(() => {
-    translateY.value = withTiming(600, {
-      duration: 190,
-      easing: Easing.in(Easing.cubic),
+    Keyboard.dismiss();
+    hasAnimatedOpen.current = false;
+    translateY.value = withTiming(SHEET_HEIGHT, {
+      duration: 240,
+      easing: Easing.bezier(0.4, 0, 0.2, 1),
     });
     backdropOpacity.value = withTiming(
       0,
       {
-        duration: 170,
+        duration: 200,
         easing: Easing.in(Easing.quad),
       },
       (finished) => {
@@ -347,6 +370,7 @@ export function ExpenseModal({
       animationType="none"
       transparent
       statusBarTranslucent
+      onShow={startOpenAnimation}
       onRequestClose={handleDismiss}
     >
       <KeyboardAvoidingView

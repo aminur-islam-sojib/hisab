@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -40,24 +40,41 @@ export function AppDrawer({
 }: AppDrawerProps) {
   const [isMounted, setIsMounted] = useState(visible);
   const restoreFromBackup = useAppStore((state) => state.restoreFromBackup);
+  const hasAnimatedOpen = useRef(false);
 
   // Position starts off-screen to the RIGHT
   const translateX = useSharedValue(DRAWER_WIDTH);
   const backdropOpacity = useSharedValue(0);
 
+  const startOpenAnimation = useCallback(() => {
+    if (hasAnimatedOpen.current) return;
+    hasAnimatedOpen.current = true;
+    // Apple fluid deceleration curve for ultra-smooth 60/120fps opening
+    translateX.value = withTiming(0, {
+      duration: 320,
+      easing: Easing.bezier(0.16, 1, 0.3, 1),
+    });
+    backdropOpacity.value = withTiming(1, {
+      duration: 260,
+      easing: Easing.out(Easing.quad),
+    });
+  }, []);
+
   useEffect(() => {
     if (visible) {
+      hasAnimatedOpen.current = false;
+      // Pre-set offscreen before native modal paints
+      translateX.value = DRAWER_WIDTH;
+      backdropOpacity.value = 0;
       setIsMounted(true);
-      // Apple fluid deceleration curve for ultra-premium feel
-      translateX.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.bezier(0.16, 1, 0.3, 1),
-      });
-      backdropOpacity.value = withTiming(1, {
-        duration: 250,
-        easing: Easing.out(Easing.quad),
-      });
+
+      // Trigger animation after native modal layout initialization (ensures 0 dropped frames)
+      const timer = setTimeout(() => {
+        startOpenAnimation();
+      }, 35);
+      return () => clearTimeout(timer);
     } else {
+      hasAnimatedOpen.current = false;
       translateX.value = withTiming(DRAWER_WIDTH, {
         duration: 240,
         easing: Easing.bezier(0.4, 0, 0.2, 1),
@@ -75,17 +92,18 @@ export function AppDrawer({
         }
       );
     }
-  }, [visible]);
+  }, [visible, startOpenAnimation]);
 
   const handleDismiss = useCallback(() => {
+    hasAnimatedOpen.current = false;
     translateX.value = withTiming(DRAWER_WIDTH, {
-      duration: 220,
+      duration: 240,
       easing: Easing.bezier(0.4, 0, 0.2, 1),
     });
     backdropOpacity.value = withTiming(
       0,
       {
-        duration: 180,
+        duration: 200,
         easing: Easing.in(Easing.quad),
       },
       (finished) => {
@@ -190,6 +208,7 @@ export function AppDrawer({
       animationType="none"
       transparent
       statusBarTranslucent
+      onShow={startOpenAnimation}
       onRequestClose={handleDismiss}
     >
       <View style={styles.modalRoot}>
