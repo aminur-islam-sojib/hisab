@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { format } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
 import {
+  selectDailyTotal,
+  selectDailyIncomeTotal,
   selectMonthlyExpenseTotal,
   selectMonthlyIncomeTotal,
   selectCategoryBreakdown,
@@ -33,6 +35,25 @@ export default function TodayScreen() {
   const parsedDate = useMemo(() => parseLocalDateString(selectedDate), [selectedDate]);
   const monthName = useMemo(() => format(parsedDate, 'MMMM'), [parsedDate]);
 
+  // Today / Selected Date Totals & Breakdowns
+  const todayExpenseTotal = useMemo(
+    () => selectDailyTotal(expenses, selectedDate),
+    [expenses, selectedDate]
+  );
+  const todayIncomeTotal = useMemo(
+    () => selectDailyIncomeTotal(expenses, selectedDate),
+    [expenses, selectedDate]
+  );
+  const todayExpenseBreakdown = useMemo(
+    () => selectCategoryBreakdown(expenses, categories, { date: selectedDate, type: 'expense' }),
+    [expenses, categories, selectedDate]
+  );
+  const todayIncomeBreakdown = useMemo(
+    () => selectCategoryBreakdown(expenses, categories, { date: selectedDate, type: 'income' }),
+    [expenses, categories, selectedDate]
+  );
+
+  // Month Totals & Breakdowns
   const monthExpenseTotal = useMemo(
     () => selectMonthlyExpenseTotal(expenses, parsedDate),
     [expenses, parsedDate]
@@ -96,9 +117,14 @@ export default function TodayScreen() {
             className="mt-1"
           />
 
-          {/* CoinPie Donut Chart Card with Tabs & Category Breakdown */}
+          {/* CoinPie Donut Chart Card with Tabs (Today, Expenses, Income, Loans) */}
           <CoinPieCard
             monthName={monthName}
+            selectedDate={selectedDate}
+            todayExpenseTotalMinor={todayExpenseTotal}
+            todayIncomeTotalMinor={todayIncomeTotal}
+            todayExpenseBreakdown={todayExpenseBreakdown}
+            todayIncomeBreakdown={todayIncomeBreakdown}
             expenseTotalMinor={monthExpenseTotal}
             incomeTotalMinor={monthIncomeTotal}
             expenseBreakdown={expenseBreakdown}

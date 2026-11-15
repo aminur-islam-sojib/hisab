@@ -1,14 +1,21 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView } from 'react-native';
 import Svg, { Path, Circle, G } from 'react-native-svg';
+import { format } from 'date-fns';
 import { formatCurrency } from '@/utils/currency';
 import { Icon } from '@/components/ui/Icon';
 import { CategoryBreakdownItem } from '@/store/selectors';
+import { getLocalTodayDateString, parseLocalDateString } from '@/utils/date';
 
-export type CoinPieTab = 'expenses' | 'income' | 'loans';
+export type CoinPieTab = 'today' | 'expenses' | 'income' | 'loans';
 
 export interface CoinPieCardProps {
   monthName: string;
+  selectedDate: string;
+  todayExpenseTotalMinor: number;
+  todayIncomeTotalMinor: number;
+  todayExpenseBreakdown: CategoryBreakdownItem[];
+  todayIncomeBreakdown: CategoryBreakdownItem[];
   expenseTotalMinor: number;
   incomeTotalMinor: number;
   expenseBreakdown: CategoryBreakdownItem[];
@@ -43,6 +50,11 @@ function createArcPath(cx: number, cy: number, r: number, startAngle: number, en
 
 export const CoinPieCard = React.memo(function CoinPieCard({
   monthName,
+  selectedDate,
+  todayExpenseTotalMinor,
+  todayIncomeTotalMinor,
+  todayExpenseBreakdown,
+  todayIncomeBreakdown,
   expenseTotalMinor,
   incomeTotalMinor,
   expenseBreakdown,
@@ -52,11 +64,61 @@ export const CoinPieCard = React.memo(function CoinPieCard({
   onSelectCategory,
   className = '',
 }: CoinPieCardProps) {
-  const [activeTab, setActiveTab] = useState<CoinPieTab>('expenses');
+  const [activeTab, setActiveTab] = useState<CoinPieTab>('today');
+  const [todaySubTab, setTodaySubTab] = useState<'expense' | 'income'>('expense');
 
-  const currentTotalMinor = activeTab === 'expenses' ? expenseTotalMinor : incomeTotalMinor;
-  const currentBreakdown = activeTab === 'expenses' ? expenseBreakdown : incomeBreakdown;
-  const centerLabel = activeTab === 'expenses' ? `Spent in ${monthName}` : `Earned in ${monthName}`;
+  const isToday = selectedDate === getLocalTodayDateString();
+  const dateDisplay = format(parseLocalDateString(selectedDate), 'd MMM');
+
+  const { currentTotalMinor, currentBreakdown, centerLabel } = useMemo(() => {
+    if (activeTab === 'today') {
+      if (todaySubTab === 'expense') {
+        return {
+          currentTotalMinor: todayExpenseTotalMinor,
+          currentBreakdown: todayExpenseBreakdown,
+          centerLabel: isToday ? 'Spent Today' : `Spent on ${dateDisplay}`,
+        };
+      }
+      return {
+        currentTotalMinor: todayIncomeTotalMinor,
+        currentBreakdown: todayIncomeBreakdown,
+        centerLabel: isToday ? 'Earned Today' : `Earned on ${dateDisplay}`,
+      };
+    }
+    if (activeTab === 'expenses') {
+      return {
+        currentTotalMinor: expenseTotalMinor,
+        currentBreakdown: expenseBreakdown,
+        centerLabel: `Spent in ${monthName}`,
+      };
+    }
+    if (activeTab === 'income') {
+      return {
+        currentTotalMinor: incomeTotalMinor,
+        currentBreakdown: incomeBreakdown,
+        centerLabel: `Earned in ${monthName}`,
+      };
+    }
+    return {
+      currentTotalMinor: 0,
+      currentBreakdown: [],
+      centerLabel: 'Loans & Debts',
+    };
+  }, [
+    activeTab,
+    todaySubTab,
+    todayExpenseTotalMinor,
+    todayIncomeTotalMinor,
+    todayExpenseBreakdown,
+    todayIncomeBreakdown,
+    expenseTotalMinor,
+    incomeTotalMinor,
+    expenseBreakdown,
+    incomeBreakdown,
+    isToday,
+    dateDisplay,
+    monthName,
+  ]);
 
   // Calculate arc segments for the donut chart
   const slices = useMemo(() => {
@@ -101,47 +163,107 @@ export const CoinPieCard = React.memo(function CoinPieCard({
 
   return (
     <View className={`bg-white rounded-3xl p-4 shadow-sm border border-[#E4E0D8] mb-3.5 ${className}`}>
-      {/* 3 Tabs: Expenses | Income | Loans */}
-      <View className="flex-row border-b border-[#E4E0D8] pb-1 mb-3">
-        <Pressable
-          onPress={() => setActiveTab('expenses')}
-          className={`mr-6 pb-2 relative ${activeTab === 'expenses' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
-        >
-          <Text
-            className={`text-base ${
-              activeTab === 'expenses' ? 'font-extrabold text-[#18181B]' : 'font-semibold text-[#71717A]'
-            }`}
+      {/* 4 Tabs: Today | Expenses | Income | Loans */}
+      <View className="border-b border-[#E4E0D8] pb-1 mb-3">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+          {/* Today Tab */}
+          <Pressable
+            onPress={() => setActiveTab('today')}
+            className={`mr-6 pb-2 relative ${activeTab === 'today' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
           >
-            Expenses
-          </Text>
-        </Pressable>
+            <Text
+              className={`text-base ${
+                activeTab === 'today' ? 'font-black text-[#18181B]' : 'font-semibold text-[#71717A]'
+              }`}
+            >
+              Today
+            </Text>
+          </Pressable>
 
-        <Pressable
-          onPress={() => setActiveTab('income')}
-          className={`mr-6 pb-2 relative ${activeTab === 'income' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
-        >
-          <Text
-            className={`text-base ${
-              activeTab === 'income' ? 'font-extrabold text-[#18181B]' : 'font-semibold text-[#71717A]'
-            }`}
+          {/* Month Expenses Tab */}
+          <Pressable
+            onPress={() => setActiveTab('expenses')}
+            className={`mr-6 pb-2 relative ${activeTab === 'expenses' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
           >
-            Income
-          </Text>
-        </Pressable>
+            <Text
+              className={`text-base ${
+                activeTab === 'expenses' ? 'font-black text-[#18181B]' : 'font-semibold text-[#71717A]'
+              }`}
+            >
+              Expenses
+            </Text>
+          </Pressable>
 
-        <Pressable
-          onPress={() => setActiveTab('loans')}
-          className={`pb-2 relative ${activeTab === 'loans' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
-        >
-          <Text
-            className={`text-base ${
-              activeTab === 'loans' ? 'font-extrabold text-[#18181B]' : 'font-semibold text-[#71717A]'
-            }`}
+          {/* Month Income Tab */}
+          <Pressable
+            onPress={() => setActiveTab('income')}
+            className={`mr-6 pb-2 relative ${activeTab === 'income' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
           >
-            Loans
-          </Text>
-        </Pressable>
+            <Text
+              className={`text-base ${
+                activeTab === 'income' ? 'font-black text-[#18181B]' : 'font-semibold text-[#71717A]'
+              }`}
+            >
+              Income
+            </Text>
+          </Pressable>
+
+          {/* Loans Tab */}
+          <Pressable
+            onPress={() => setActiveTab('loans')}
+            className={`mr-2 pb-2 relative ${activeTab === 'loans' ? 'border-b-2 border-[#FF5A1F]' : ''}`}
+          >
+            <Text
+              className={`text-base ${
+                activeTab === 'loans' ? 'font-black text-[#18181B]' : 'font-semibold text-[#71717A]'
+              }`}
+            >
+              Loans
+            </Text>
+          </Pressable>
+        </ScrollView>
       </View>
+
+      {/* Sub-selector for Today: Expense vs Income Pill Chips */}
+      {activeTab === 'today' && (
+        <View className="flex-row items-center justify-center gap-2 mb-2">
+          <Pressable
+            onPress={() => setTodaySubTab('expense')}
+            className={`flex-row items-center px-3.5 py-1.5 rounded-full border ${
+              todaySubTab === 'expense'
+                ? 'bg-[#FFF0EB] border-[#FF5A1F]'
+                : 'bg-[#F4F1EA] border-[#E4E0D8]'
+            }`}
+          >
+            <View className="w-2 h-2 rounded-full bg-[#FF5A1F] mr-1.5" />
+            <Text
+              className={`text-xs font-bold ${
+                todaySubTab === 'expense' ? 'text-[#FF5A1F]' : 'text-[#71717A]'
+              }`}
+            >
+              Expense: {formatCurrency(todayExpenseTotalMinor, { currencySymbol, showDecimals })}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setTodaySubTab('income')}
+            className={`flex-row items-center px-3.5 py-1.5 rounded-full border ${
+              todaySubTab === 'income'
+                ? 'bg-[#EBFDF5] border-[#10B981]'
+                : 'bg-[#F4F1EA] border-[#E4E0D8]'
+            }`}
+          >
+            <View className="w-2 h-2 rounded-full bg-[#10B981] mr-1.5" />
+            <Text
+              className={`text-xs font-bold ${
+                todaySubTab === 'income' ? 'text-[#10B981]' : 'text-[#71717A]'
+              }`}
+            >
+              Income: {formatCurrency(todayIncomeTotalMinor, { currencySymbol, showDecimals })}
+            </Text>
+          </Pressable>
+        </View>
+      )}
 
       {/* Donut Chart with Center Text */}
       <View className="items-center justify-center my-2">
@@ -239,6 +361,8 @@ export const CoinPieCard = React.memo(function CoinPieCard({
           <Text className="text-xs text-[#71717A] font-medium text-center">
             {activeTab === 'loans'
               ? 'No active loans or borrowings found.'
+              : activeTab === 'today'
+              ? `No ${todaySubTab} logged for ${isToday ? 'today' : dateDisplay}.`
               : `No ${activeTab} logged for ${monthName}.`}
           </Text>
         </View>
