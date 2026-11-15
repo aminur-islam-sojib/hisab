@@ -65,6 +65,7 @@ export const useAppStore = create<AppStoreState>()(
           paymentMethod: input.paymentMethod,
           note: input.note ?? '',
           spentAtDate: input.spentAtDate,
+          type: input.type ?? 'expense',
           createdAt: now,
           updatedAt: now,
         };
@@ -118,6 +119,7 @@ export const useAppStore = create<AppStoreState>()(
           name: input.name,
           icon: input.icon,
           color: input.color,
+          type: input.type ?? 'expense',
           isDefault: false,
           isArchived: input.isArchived ?? false,
           sortOrder: input.sortOrder ?? get().categories.length,

@@ -106,7 +106,12 @@ export function ExpenseItem({
 
       {/* Right: Amount & Action Buttons */}
       <View className="items-end justify-center">
-        <Text className="text-base font-bold text-[#18181B]">
+        <Text
+          className={`text-base font-bold ${
+            expense.type === 'income' ? 'text-[#16A34A]' : 'text-[#18181B]'
+          }`}
+        >
+          {expense.type === 'income' ? '+' : '-'}
           {formatCurrency(expense.amountMinor, { currencySymbol, showDecimals })}
         </Text>
 

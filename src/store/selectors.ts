@@ -105,7 +105,16 @@ export function selectExpensesByDate(expenses: Expense[], dateStr: string): Expe
  */
 export function selectDailyTotal(expenses: Expense[], dateStr: string): number {
   return expenses
-    .filter((e) => e.spentAtDate === dateStr)
+    .filter((e) => e.spentAtDate === dateStr && (e.type ?? 'expense') === 'expense')
+    .reduce((sum, e) => sum + e.amountMinor, 0);
+}
+
+/**
+ * Computes the total minor unit income earned on a specific date.
+ */
+export function selectDailyIncomeTotal(expenses: Expense[], dateStr: string): number {
+  return expenses
+    .filter((e) => e.spentAtDate === dateStr && e.type === 'income')
     .reduce((sum, e) => sum + e.amountMinor, 0);
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -21,7 +21,7 @@ import {
   isYesterday as checkIsYesterday,
 } from 'date-fns';
 import { useAppStore } from '@/store/useAppStore';
-import { PaymentMethod } from '@/models/schema';
+import { PaymentMethod, TransactionType } from '@/models/schema';
 import {
   formatDateToLocalString,
   getLocalTodayDateString,
@@ -38,14 +38,16 @@ export interface ExpenseFormValues {
   paymentMethod: PaymentMethod;
   note: string;
   spentAtDate: string;
+  type: TransactionType;
 }
 
 export interface ExpenseFormProps {
   initialValues?: Partial<ExpenseFormValues>;
+  initialType?: TransactionType;
   onSubmit: (values: ExpenseFormValues) => void;
   onDelete?: () => void;
-  title: string;
-  submitLabel: string;
+  title?: string;
+  submitLabel?: string;
 }
 
 const PRESET_COLORS = [
@@ -74,10 +76,14 @@ const PRESET_ICONS = [
   'GraduationCap',
   'Laptop',
   'ShoppingCart',
+  'Briefcase',
+  'Gift',
+  'DollarSign',
 ];
 
 export function ExpenseForm({
   initialValues,
+  initialType = 'expense',
   onSubmit,
   onDelete,
   title,
@@ -87,8 +93,19 @@ export function ExpenseForm({
   const settings = useAppStore((state) => state.settings);
   const addCategory = useAppStore((state) => state.addCategory);
 
+  const [transactionType, setTransactionType] = useState<TransactionType>(
+    initialValues?.type ?? initialType
+  );
+
+  const activeCategories = useMemo(() => {
+    const filtered = categories.filter(
+      (c) => !c.isArchived && ((c.type ?? 'expense') === transactionType || c.type === 'both')
+    );
+    return filtered.length > 0 ? filtered : categories.filter((c) => !c.isArchived);
+  }, [categories, transactionType]);
+
   const defaultCategoryId =
-    categories.find((c) => !c.isArchived)?.id ?? categories[0]?.id ?? 'cat_food';
+    activeCategories[0]?.id ?? 'cat_food';
 
   const initialAmount = initialValues?.amountMinor
     ? (initialValues.amountMinor / 100).toString()
@@ -105,6 +122,15 @@ export function ExpenseForm({
   const [spentAtDate, setSpentAtDate] = useState<string>(
     initialValues?.spentAtDate ?? getLocalTodayDateString()
   );
+
+  // Keep selected category valid when toggling type
+  useEffect(() => {
+    if (!activeCategories.some((c) => c.id === categoryId)) {
+      if (activeCategories[0]) {
+        setCategoryId(activeCategories[0].id);
+      }
+    }
+  }, [transactionType, activeCategories]);
 
   // Date picker expand toggle
   const [showDateSelector, setShowDateSelector] = useState(false);
@@ -124,8 +150,13 @@ export function ExpenseForm({
   else if (isYesterday) datePrefix = 'Yesterday · ';
 
   const formattedDate = format(parsedDate, 'EEE, d MMM');
-
   const isValidAmount = parseCurrencyInput(amountStr) > 0;
+
+  const displayTitle =
+    title ??
+    (initialValues?.amountMinor
+      ? transactionType === 'income' ? 'Edit income' : 'Edit expense'
+      : transactionType === 'income' ? 'Add income' : 'Add expense');
 
   const handleAmountChange = (text: string) => {
     const sanitized = text.replace(/,/g, '.').replace(/[^0-9.]/g, '');
@@ -144,12 +175,12 @@ export function ExpenseForm({
     const amountMinor = parseCurrencyInput(amountStr);
 
     if (amountMinor <= 0) {
-      Alert.alert('Invalid Amount', 'Please enter an expense amount greater than 0.');
+      Alert.alert('Invalid Amount', 'Please enter an amount greater than 0.');
       return;
     }
 
     if (!categoryId) {
-      Alert.alert('Select Category', 'Please choose a category for this expense.');
+      Alert.alert('Select Category', 'Please choose a category.');
       return;
     }
 
@@ -159,6 +190,7 @@ export function ExpenseForm({
       paymentMethod,
       note: note.trim(),
       spentAtDate,
+      type: transactionType,
     });
   };
 
@@ -166,8 +198,8 @@ export function ExpenseForm({
     if (!onDelete) return;
 
     Alert.alert(
-      'Delete Expense',
-      'Are you sure you want to delete this expense?',
+      'Delete Transaction',
+      'Are you sure you want to delete this entry?',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -191,6 +223,7 @@ export function ExpenseForm({
       name: trimmed,
       icon: newCatIcon,
       color: newCatColor,
+      type: transactionType,
       isArchived: false,
       sortOrder: categories.length,
     });
@@ -220,7 +253,7 @@ export function ExpenseForm({
           <View className="flex-row items-start justify-between mt-1 mb-1">
             <View className="flex-1">
               <Text className="text-3xl font-extrabold text-[#18181B] tracking-tight">
-                {title}
+                {displayTitle}
               </Text>
 
               {/* Date line: Today · Sun, 15 Nov · change */}
@@ -259,6 +292,43 @@ export function ExpenseForm({
                 <Icon name="X" size={18} color="#18181B" />
               </Pressable>
             </View>
+          </View>
+
+          {/* Type Toggle: Expenses | Income */}
+          <View className="flex-row bg-[#ECE8DF] p-1 rounded-2xl my-2 border border-[#E4E0D8]">
+            <Pressable
+              onPress={() => setTransactionType('expense')}
+              style={[
+                styles.typeTab,
+                transactionType === 'expense' && styles.typeTabActiveExpense,
+              ]}
+              className="flex-1 py-2 items-center justify-center rounded-xl"
+            >
+              <Text
+                className={`text-xs font-bold ${
+                  transactionType === 'expense' ? 'text-white' : 'text-[#71717A]'
+                }`}
+              >
+                Expenses
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => setTransactionType('income')}
+              style={[
+                styles.typeTab,
+                transactionType === 'income' && styles.typeTabActiveIncome,
+              ]}
+              className="flex-1 py-2 items-center justify-center rounded-xl"
+            >
+              <Text
+                className={`text-xs font-bold ${
+                  transactionType === 'income' ? 'text-white' : 'text-[#71717A]'
+                }`}
+              >
+                Income
+              </Text>
+            </Pressable>
           </View>
 
           {/* Collapsible Date Selector Bar */}
@@ -313,10 +383,13 @@ export function ExpenseForm({
             </View>
           )}
 
-          {/* Amount Card: White background, Orange border, Left aligned ৳ 0 */}
+          {/* Amount Card: Orange border for expense, Charcoal border for income */}
           <View
-            style={styles.amountCard}
-            className="bg-white rounded-3xl border-2 border-[#FF5A1F] px-5 py-3 my-3 justify-center shadow-sm"
+            style={[
+              styles.amountCard,
+              transactionType === 'income' ? styles.amountCardIncome : styles.amountCardExpense,
+            ]}
+            className="bg-white rounded-3xl px-5 py-3 my-2 justify-center shadow-sm"
           >
             <View className="flex-row items-center">
               <Text className="text-3xl font-extrabold text-[#18181B] mr-2">
@@ -336,10 +409,10 @@ export function ExpenseForm({
             </View>
           </View>
 
-          {/* Note Card: White background, Note: what was it for? */}
+          {/* Note Card */}
           <View
             style={styles.noteCard}
-            className="bg-white rounded-3xl border border-[#E4E0D8] px-5 py-3 mb-5 justify-center shadow-sm"
+            className="bg-white rounded-3xl border border-[#E4E0D8] px-5 py-3 mb-4 justify-center shadow-sm"
           >
             <TextInput
               value={note}
@@ -358,7 +431,7 @@ export function ExpenseForm({
 
           {/* 4-Column Category Grid */}
           <CategoryPickerGrid
-            categories={categories}
+            categories={activeCategories}
             selectedCategoryId={categoryId}
             onSelectCategory={setCategoryId}
             onAddCategoryPress={() => setShowAddCategoryModal(true)}
@@ -382,10 +455,18 @@ export function ExpenseForm({
             disabled={!isValidAmount}
             style={[
               styles.saveBtn,
-              isValidAmount ? styles.saveBtnActive : styles.saveBtnDisabled,
+              isValidAmount
+                ? transactionType === 'income'
+                  ? styles.saveBtnActiveIncome
+                  : styles.saveBtnActiveExpense
+                : styles.saveBtnDisabled,
             ]}
             className={`w-full rounded-2xl items-center justify-center mt-2 mb-8 ${
-              isValidAmount ? 'bg-[#FF5A1F]' : 'bg-[#D9D6CE]'
+              isValidAmount
+                ? transactionType === 'income'
+                  ? 'bg-[#18181B]'
+                  : 'bg-[#FF5A1F]'
+                : 'bg-[#D9D6CE]'
             }`}
           >
             <Text
@@ -393,7 +474,7 @@ export function ExpenseForm({
                 isValidAmount ? 'text-white' : 'text-[#78756E]'
               }`}
             >
-              {submitLabel === 'Save Expense' ? 'Save' : submitLabel}
+              {submitLabel ?? 'Save'}
             </Text>
           </Pressable>
         </ScrollView>
@@ -409,7 +490,9 @@ export function ExpenseForm({
         <View style={styles.modalOverlay} className="flex-1 justify-center items-center p-5">
           <View className="bg-white rounded-3xl p-5 w-full max-w-sm border border-[#E4E0D8] shadow-lg">
             <View className="flex-row items-center justify-between mb-4">
-              <Text className="text-lg font-bold text-[#18181B]">New Category</Text>
+              <Text className="text-lg font-bold text-[#18181B]">
+                New {transactionType === 'income' ? 'Income' : 'Expense'} Category
+              </Text>
               <Pressable
                 hitSlop={8}
                 onPress={() => setShowAddCategoryModal(false)}
@@ -422,7 +505,7 @@ export function ExpenseForm({
             <TextInput
               value={newCatName}
               onChangeText={setNewCatName}
-              placeholder="Category name (e.g. Games, Petrol)"
+              placeholder="Category name (e.g. Bonus, Rent)"
               placeholderTextColor="#A1A1AA"
               className="bg-[#FAF8F5] rounded-2xl px-4 py-3 text-base text-[#18181B] border border-[#E4E0D8] mb-4"
             />
@@ -472,7 +555,9 @@ export function ExpenseForm({
             {/* Create Button */}
             <Pressable
               onPress={handleCreateCategory}
-              className="bg-[#FF5A1F] rounded-2xl py-3.5 items-center justify-center"
+              className={`rounded-2xl py-3.5 items-center justify-center ${
+                transactionType === 'income' ? 'bg-[#18181B]' : 'bg-[#FF5A1F]'
+              }`}
             >
               <Text className="text-white font-bold text-base">Add Category</Text>
             </Pressable>
@@ -492,6 +577,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
   },
+  typeTab: {
+    minHeight: 34,
+  },
+  typeTabActiveExpense: {
+    backgroundColor: '#FF5A1F',
+  },
+  typeTabActiveIncome: {
+    backgroundColor: '#18181B',
+  },
   dateCircleBtn: {
     width: 34,
     height: 34,
@@ -501,6 +595,14 @@ const styles = StyleSheet.create({
   },
   amountCard: {
     minHeight: 74,
+  },
+  amountCardExpense: {
+    borderWidth: 2,
+    borderColor: '#FF5A1F',
+  },
+  amountCardIncome: {
+    borderWidth: 2,
+    borderColor: '#18181B',
   },
   amountInput: {
     flex: 1,
@@ -519,8 +621,15 @@ const styles = StyleSheet.create({
   saveBtn: {
     minHeight: 52,
   },
-  saveBtnActive: {
+  saveBtnActiveExpense: {
     shadowColor: '#FF5A1F',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  saveBtnActiveIncome: {
+    shadowColor: '#18181B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,

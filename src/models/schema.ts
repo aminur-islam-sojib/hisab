@@ -3,6 +3,9 @@ import { z } from 'zod';
 export const PaymentMethodEnum = z.enum(['cash', 'mobile_banking', 'card', 'bank']);
 export type PaymentMethod = z.infer<typeof PaymentMethodEnum>;
 
+export const TransactionTypeEnum = z.enum(['expense', 'income']);
+export type TransactionType = z.infer<typeof TransactionTypeEnum>;
+
 /**
  * 1. CATEGORY MODEL
  */
@@ -11,6 +14,7 @@ export const CategorySchema = z.object({
   name: z.string().min(1),
   icon: z.string(), // Lucide icon name (e.g., 'Utensils', 'Bus')
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  type: z.enum(['expense', 'income', 'both']).default('expense'),
   isDefault: z.boolean().default(false),
   isArchived: z.boolean().default(false),
   sortOrder: z.number().int().default(0),
@@ -28,6 +32,7 @@ export const ExpenseSchema = z.object({
   paymentMethod: PaymentMethodEnum.default('cash'),
   note: z.string().default(''),
   spentAtDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // Local 'YYYY-MM-DD'
+  type: TransactionTypeEnum.default('expense'),
   createdAt: z.number().int(),
   updatedAt: z.number().int(),
 });

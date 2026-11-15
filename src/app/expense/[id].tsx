@@ -34,6 +34,7 @@ export default function EditExpenseScreen() {
       paymentMethod: values.paymentMethod,
       note: values.note,
       spentAtDate: values.spentAtDate,
+      type: values.type,
     });
     router.back();
   };

@@ -60,6 +60,7 @@ export function CategoryManagerCard({ className = '' }: CategoryManagerCardProps
       name: newCatName.trim(),
       icon: selectedIcon,
       color: selectedColor,
+      type: 'expense',
       isArchived: false,
       sortOrder: categories.length,
     });
