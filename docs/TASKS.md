@@ -33,9 +33,9 @@
 
 ## Milestone 5: Settings, Categories & JSON/CSV Backup System
 
-- [ ] Implement `src/utils/backup.ts`:
+- [x] Implement `src/utils/backup.ts`:
   - `exportFullBackupJson()`: Serializes store state into `BackupFileSchema` format and shares `daily-cost-backup-YYYY-MM-DD.json` via `expo-file-system` and `expo-sharing`.
   - `importAndValidateBackupJson()`: Picks `.json` file via `expo-document-picker` and validates with `BackupFileSchema.safeParse()`.
   - `exportExpensesCsv()`: Exports RFC-4180 escaped CSV (`daily-cost-export-YYYY-MM-DD.csv`) for Excel/Google Sheets.
-- [ ] Implement `src/app/(tabs)/settings.tsx` with Daily/Monthly budget inputs, custom category creator/archiver, and Backup/Restore buttons (`Replace All` vs `Merge Data` confirmation modal).
-- [ ] Final verification: Run `npx tsc --noEmit` and test full JSON export -> reset -> restore cycle.
+- [x] Implement `src/app/(tabs)/settings.tsx` with Daily/Monthly budget inputs, custom category creator/archiver, and Backup/Restore buttons (`Replace All` vs `Merge Data` confirmation modal).
+- [x] Final verification: Run `npx tsc --noEmit` and test full JSON export -> reset -> restore cycle.
