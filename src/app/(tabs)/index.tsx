@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { useAppStore } from '@/store/useAppStore';
 import {
   selectCategoryMap,
@@ -15,12 +14,22 @@ import { DateSwitcher } from '@/components/expense/DateSwitcher';
 import { DailySpendHero } from '@/components/expense/DailySpendHero';
 import { PaymentFilterChips, PaymentFilterType } from '@/components/expense/PaymentFilterChips';
 import { ExpenseItem } from '@/components/expense/ExpenseItem';
+import { ExpenseModal } from '@/components/expense/ExpenseModal';
 import { Icon } from '@/components/ui/Icon';
 import { Expense, TransactionType } from '@/models/schema';
 
 export default function TodayScreen() {
   const [selectedDate, setSelectedDate] = useState<string>(getLocalTodayDateString());
   const [selectedPayment, setSelectedPayment] = useState<PaymentFilterType>('all');
+  const [modalConfig, setModalConfig] = useState<{
+    visible: boolean;
+    type: TransactionType;
+    expenseToEdit: Expense | null;
+  }>({
+    visible: false,
+    type: 'expense',
+    expenseToEdit: null,
+  });
 
   const expenses = useAppStore((state) => state.expenses);
   const categories = useAppStore((state) => state.categories);
@@ -40,11 +49,11 @@ export default function TodayScreen() {
   const heroDateLabel = isToday ? "Today's Total Spend" : 'Total Daily Spend';
 
   const handleExpensePress = (item: Expense) => {
-    router.push({ pathname: '/expense/[id]', params: { id: item.id } });
+    setModalConfig({ visible: true, type: item.type ?? 'expense', expenseToEdit: item });
   };
 
   const handleAddTransaction = (type: TransactionType) => {
-    router.push({ pathname: '/expense/new', params: { type } });
+    setModalConfig({ visible: true, type, expenseToEdit: null });
   };
 
   return (
@@ -127,6 +136,14 @@ export default function TodayScreen() {
           <Text className="text-white font-bold text-base ml-2">Expenses</Text>
         </Pressable>
       </View>
+
+      {/* In-Place Slide-up Bottom Sheet Modal */}
+      <ExpenseModal
+        visible={modalConfig.visible}
+        type={modalConfig.type}
+        expenseToEdit={modalConfig.expenseToEdit}
+        onClose={() => setModalConfig((prev) => ({ ...prev, visible: false }))}
+      />
     </SafeAreaView>
   );
 }

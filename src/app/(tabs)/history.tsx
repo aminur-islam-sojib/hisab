@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, SectionList, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 import { useAppStore } from '@/store/useAppStore';
 import { selectCategoryMap, selectGroupedExpensesByDate } from '@/store/selectors';
 import { Expense, PaymentMethod } from '@/models/schema';
 import { formatCurrency } from '@/utils/currency';
 import { ExpenseItem } from '@/components/expense/ExpenseItem';
+import { ExpenseModal } from '@/components/expense/ExpenseModal';
 import { HistoryFilterBar } from '@/components/history/HistoryFilterBar';
 import { Icon } from '@/components/ui/Icon';
 
@@ -14,6 +14,7 @@ export default function HistoryScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | 'all'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   const expenses = useAppStore((state) => state.expenses);
   const categories = useAppStore((state) => state.categories);
@@ -37,21 +38,12 @@ export default function HistoryScreen() {
     [sections]
   );
 
-  const handleExpensePress = (item: Expense) => {
-    router.push({
-      pathname: '/expense/[id]',
-      params: { id: item.id },
-    });
-  };
-
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#F7F4EF]">
       <View className="flex-1 px-4">
         {/* Header */}
         <View className="flex-row items-center justify-between py-3">
-          <Text className="text-2xl font-extrabold text-[#18181B] tracking-tight">
-            History
-          </Text>
+          <Text className="text-2xl font-extrabold text-[#18181B] tracking-tight">History</Text>
           <Text className="text-xs font-semibold text-[#71717A]">
             {totalResultsCount} {totalResultsCount === 1 ? 'transaction' : 'transactions'}
           </Text>
@@ -77,13 +69,8 @@ export default function HistoryScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
           renderSectionHeader={({ section }) => (
-            <View
-              style={styles.sectionHeader}
-              className="flex-row items-center justify-between py-2 px-1 bg-[#F7F4EF]"
-            >
-              <Text className="text-xs font-bold text-[#71717A] uppercase tracking-wider">
-                {section.title}
-              </Text>
+            <View style={styles.sectionHeader} className="flex-row items-center justify-between py-2 px-1 bg-[#F7F4EF]">
+              <Text className="text-xs font-bold text-[#71717A] uppercase tracking-wider">{section.title}</Text>
               <Text className="text-xs font-extrabold text-[#18181B]">
                 {formatCurrency(section.totalMinor, {
                   currencySymbol: settings.currencySymbol,
@@ -98,8 +85,8 @@ export default function HistoryScreen() {
               category={categoryMap.get(item.categoryId)}
               currencySymbol={settings.currencySymbol}
               showDecimals={settings.showDecimals}
-              onPress={handleExpensePress}
-              onEdit={handleExpensePress}
+              onPress={setEditingExpense}
+              onEdit={setEditingExpense}
               onDelete={deleteExpense}
             />
           )}
@@ -108,9 +95,7 @@ export default function HistoryScreen() {
               <View className="w-16 h-16 rounded-full bg-[#ECE8DF] items-center justify-center mb-3">
                 <Icon name="Search" size={26} color="#71717A" />
               </View>
-              <Text className="text-base font-semibold text-[#18181B] mb-1">
-                No Transactions Found
-              </Text>
+              <Text className="text-base font-semibold text-[#18181B] mb-1">No Transactions Found</Text>
               <Text className="text-xs text-[#71717A] text-center max-w-[240px]">
                 {expenses.length === 0
                   ? 'No expenses have been recorded yet.'
@@ -120,6 +105,14 @@ export default function HistoryScreen() {
           }
         />
       </View>
+
+      {/* In-Place Slide-up Edit Modal */}
+      <ExpenseModal
+        visible={editingExpense !== null}
+        type={editingExpense?.type ?? 'expense'}
+        expenseToEdit={editingExpense}
+        onClose={() => setEditingExpense(null)}
+      />
     </SafeAreaView>
   );
 }
