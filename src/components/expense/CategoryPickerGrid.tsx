@@ -43,14 +43,14 @@ export const CategoryPickerGrid = React.memo(function CategoryPickerGrid({
               >
                 <Icon
                   name={category.icon}
-                  size={24}
+                  size={20}
                   color="#FFFFFF"
                   strokeWidth={2.2}
                 />
               </View>
               <Text
                 numberOfLines={1}
-                className={`text-xs text-center mt-1.5 ${
+                className={`text-[11px] text-center mt-1 ${
                   isSelected
                     ? 'font-bold text-[#18181B]'
                     : 'font-medium text-[#52525B]'
@@ -69,11 +69,11 @@ export const CategoryPickerGrid = React.memo(function CategoryPickerGrid({
             style={styles.gridItem}
           >
             <View style={styles.addSquircle}>
-              <Icon name="Plus" size={22} color="#18181B" strokeWidth={2.4} />
+              <Icon name="Plus" size={18} color="#18181B" strokeWidth={2.4} />
             </View>
             <Text
               numberOfLines={1}
-              className="text-xs font-medium text-[#71717A] text-center mt-1.5"
+              className="text-[11px] font-medium text-[#71717A] text-center mt-1"
             >
               Add
             </Text>
@@ -93,28 +93,28 @@ const styles = StyleSheet.create({
   gridItem: {
     width: '23%',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   squircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
   selectedSquircle: {
-    borderWidth: 3.5,
+    borderWidth: 2.5,
     borderColor: '#18181B',
     shadowColor: '#18181B',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.22,
+    shadowRadius: 3,
+    elevation: 3,
   },
   addSquircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 18,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     backgroundColor: '#FFFFFF',
     borderWidth: 1.5,
     borderColor: '#D1CDC7',

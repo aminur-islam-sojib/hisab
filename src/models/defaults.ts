@@ -11,6 +11,18 @@ export const DEFAULT_BUDGET_SETTINGS: BudgetSettings = {
 
 export const DEFAULT_CATEGORIES: Category[] = [
   // Expense Categories
+
+  {
+    id: 'cat_gift_expense',
+    name: 'Gift',
+    icon: 'Gift',
+    color: '#EC4899',
+    type: 'expense',
+    isDefault: true,
+    isArchived: false,
+    sortOrder: 3,
+    createdAt: 1700000000000,
+  },
   {
     id: 'cat_food',
     name: 'Food',
@@ -19,7 +31,7 @@ export const DEFAULT_CATEGORIES: Category[] = [
     type: 'expense',
     isDefault: true,
     isArchived: false,
-    sortOrder: 0,
+    sortOrder: 4,
     createdAt: 1700000000000,
   },
   {

@@ -102,13 +102,12 @@ export function ExpenseModal({
   const transactionType: TransactionType = expenseToEdit?.type ?? type;
 
   const activeCategories = useMemo(() => {
-    const filtered = categories.filter(
+    return categories.filter(
       (c) => !c.isArchived && ((c.type ?? 'expense') === transactionType || c.type === 'both')
     );
-    return filtered.length > 0 ? filtered : categories.filter((c) => !c.isArchived);
   }, [categories, transactionType]);
 
-  const defaultCategoryId = activeCategories[0]?.id ?? 'cat_food';
+  const defaultCategoryId = activeCategories[0]?.id ?? (transactionType === 'income' ? 'cat_salary' : 'cat_salary_expense');
 
   const [amountStr, setAmountStr] = useState<string>('');
   const [categoryId, setCategoryId] = useState<string>(defaultCategoryId);
@@ -193,7 +192,10 @@ export function ExpenseModal({
         setSpentAtDate(expenseToEdit.spentAtDate);
       } else {
         setAmountStr('');
-        setCategoryId(activeCategories[0]?.id ?? 'cat_food');
+        setCategoryId(
+          activeCategories[0]?.id ??
+            (transactionType === 'income' ? 'cat_salary' : 'cat_salary_expense')
+        );
         setPaymentMethod('cash');
         setNote('');
         setSpentAtDate(getLocalTodayDateString());
@@ -502,10 +504,10 @@ export function ExpenseModal({
                 styles.amountCard,
                 transactionType === 'income' ? styles.amountCardIncome : styles.amountCardExpense,
               ]}
-              className="bg-white rounded-3xl px-5 py-3 my-2 justify-center shadow-sm"
+              className="bg-white rounded-2xl px-4 py-2 my-1.5 justify-center shadow-xs"
             >
               <View className="flex-row items-center">
-                <Text className="text-3xl font-extrabold text-[#18181B] mr-2">
+                <Text className="text-2xl font-black text-[#18181B] mr-2">
                   {settings.currencySymbol}
                 </Text>
                 <TextInput
@@ -525,7 +527,7 @@ export function ExpenseModal({
             {/* Note Card */}
             <View
               style={styles.noteCard}
-              className="bg-white rounded-3xl border border-[#E4E0D8] px-5 py-3 mb-4 justify-center shadow-sm"
+              className="bg-white rounded-2xl border border-[#E4E0D8] px-4 py-2 mb-3 justify-center shadow-xs"
             >
               <TextInput
                 value={note}
@@ -533,12 +535,12 @@ export function ExpenseModal({
                 placeholder="Note: what was it for?"
                 placeholderTextColor="#A1A1AA"
                 style={styles.noteInput}
-                className="text-base text-[#18181B]"
+                className="text-sm text-[#18181B]"
               />
             </View>
 
             {/* Category Section Header */}
-            <Text className="text-base font-bold text-[#18181B] mb-3 ml-0.5">
+            <Text className="text-sm font-bold text-[#18181B] mb-2 ml-0.5">
               Category
             </Text>
 
@@ -724,29 +726,29 @@ const styles = StyleSheet.create({
     opacity: 0.35,
   },
   amountCard: {
-    minHeight: 74,
+    minHeight: 56,
   },
   amountCardExpense: {
-    borderWidth: 2,
+    borderWidth: 1.8,
     borderColor: '#FF5A1F',
   },
   amountCardIncome: {
-    borderWidth: 2,
+    borderWidth: 1.8,
     borderColor: '#18181B',
   },
   amountInput: {
     flex: 1,
-    fontSize: 34,
+    fontSize: 26,
     fontWeight: '800',
     color: '#18181B',
     paddingVertical: 0,
   },
   noteCard: {
-    minHeight: 52,
+    minHeight: 44,
   },
   noteInput: {
     paddingVertical: 0,
-    fontSize: 15,
+    fontSize: 14,
   },
   saveBtn: {
     minHeight: 52,

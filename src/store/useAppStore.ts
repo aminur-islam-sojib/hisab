@@ -212,7 +212,20 @@ export const useAppStore = create<AppStoreState>()(
         expenses: state.expenses,
       }),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        if (state) {
+          // Normalize existing categories to ensure type field is present
+          const normalized = (state.categories || []).map((cat) => ({
+            ...cat,
+            type: cat.type || 'expense',
+          }));
+
+          // Merge any newly introduced default categories
+          const existingIds = new Set(normalized.map((c) => c.id));
+          const missingDefaults = DEFAULT_CATEGORIES.filter((d) => !existingIds.has(d.id));
+
+          state.categories = missingDefaults.length > 0 ? [...normalized, ...missingDefaults] : normalized;
+          state.setHasHydrated(true);
+        }
       },
     }
   )
