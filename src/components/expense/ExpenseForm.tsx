@@ -93,9 +93,8 @@ export function ExpenseForm({
   const settings = useAppStore((state) => state.settings);
   const addCategory = useAppStore((state) => state.addCategory);
 
-  const [transactionType, setTransactionType] = useState<TransactionType>(
-    initialValues?.type ?? initialType
-  );
+  const transactionType: TransactionType =
+    initialValues?.type ?? initialType;
 
   const activeCategories = useMemo(() => {
     const filtered = categories.filter(
@@ -292,43 +291,6 @@ export function ExpenseForm({
                 <Icon name="X" size={18} color="#18181B" />
               </Pressable>
             </View>
-          </View>
-
-          {/* Type Toggle: Expenses | Income */}
-          <View className="flex-row bg-[#ECE8DF] p-1 rounded-2xl my-2 border border-[#E4E0D8]">
-            <Pressable
-              onPress={() => setTransactionType('expense')}
-              style={[
-                styles.typeTab,
-                transactionType === 'expense' && styles.typeTabActiveExpense,
-              ]}
-              className="flex-1 py-2 items-center justify-center rounded-xl"
-            >
-              <Text
-                className={`text-xs font-bold ${
-                  transactionType === 'expense' ? 'text-white' : 'text-[#71717A]'
-                }`}
-              >
-                Expenses
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setTransactionType('income')}
-              style={[
-                styles.typeTab,
-                transactionType === 'income' && styles.typeTabActiveIncome,
-              ]}
-              className="flex-1 py-2 items-center justify-center rounded-xl"
-            >
-              <Text
-                className={`text-xs font-bold ${
-                  transactionType === 'income' ? 'text-white' : 'text-[#71717A]'
-                }`}
-              >
-                Income
-              </Text>
-            </Pressable>
           </View>
 
           {/* Collapsible Date Selector Bar */}
@@ -576,15 +538,6 @@ const styles = StyleSheet.create({
   headerBtn: {
     width: 36,
     height: 36,
-  },
-  typeTab: {
-    minHeight: 34,
-  },
-  typeTabActiveExpense: {
-    backgroundColor: '#FF5A1F',
-  },
-  typeTabActiveIncome: {
-    backgroundColor: '#18181B',
   },
   dateCircleBtn: {
     width: 34,
